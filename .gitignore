@@ -147,3 +147,5 @@ node_modules
 prisma/data
 prisma/data/*
 keyfile
+
+.git

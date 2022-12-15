@@ -1,0 +1,14 @@
+{
+  "cSpell.words": ["listname"],
+
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.rulers": [80, 120],
+  "workbench.colorCustomizations": {
+    "editorRuler.foreground": "#ff4081"
+  }
+}
