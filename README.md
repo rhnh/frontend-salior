@@ -1,42 +1,16 @@
-
-# Setting up Mongodb
- - generate a keyFile in *./prisma/config*
- ```sh
-  openssl rand -base64 756 > keyfile
- ```
-- create database and logs directories inside *./prisma*
-```sh
-  mkdir data/db{1..3} && touch data/db{1..3} mongodb.log
-```
-- Run the yaml files with mongod
-```sh
-mongod -f config1.yaml
-```
-- Run mongo instance
-```sh
-  mongo admin --host localhost:27001
-```
-- initiate the ReplcaSet
-```js
-  db.initiate();
-```
-- Create the root User
-- authenticate the root user
-- create another user
-
 # Welcome to Remix!
 
 - [Remix Docs](https://remix.run/docs)
 
 ## Development
 
-From your terminal:
+Start the Remix development asset server and the Express server by running:
 
 ```sh
 npm run dev
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+This starts your app in development mode, which will purge the server require cache when Remix rebuilds assets so you don't need a process manager restarting the express server.
 
 ## Deployment
 
@@ -56,9 +30,7 @@ Now you'll need to pick a host to deploy it to.
 
 ### DIY
 
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
+If you're familiar with deploying express applications you should be right at home just make sure to deploy the output of `remix build`
 
 - `build/`
 - `public/build/`

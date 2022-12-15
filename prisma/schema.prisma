@@ -18,3 +18,57 @@ model User {
   username  String   @unique
   password  String
 }
+
+type Bird {
+  seen     DateTime @default(now())
+  birdId   String   @db.ObjectId
+  location String?
+}
+
+model List {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String
+  listname  String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  birds     Bird[]
+}
+
+enum Rank {
+  species
+  genus
+  family
+  order
+}
+
+enum Gender {
+  female
+  male
+  unknown
+}
+
+model Taxonomy {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  englishName String? // only species can have it.
+  taxonomy    String // It is a must. It should container binomial name.
+  rank        Rank
+  parent      String?
+  isApproved  Boolean
+  username    String?
+  slug        String?
+  image       String?
+  info        String?
+  sex         Gender?
+  ancestors   String[]
+  credit      String?
+}
+
+model Posts {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  isFeatured Boolean?
+  title      String
+  body       String
+  username   String
+}
