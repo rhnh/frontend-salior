@@ -1,11 +1,12 @@
 import { json } from "@remix-run/node";
-import type { ActionFunction } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 import { getTaxonomyPaginated } from "~/models/taxonomy.server";
-import { Link, useLoaderData } from "@remix-run/react";
-import type { Taxonomy } from "@prisma/client";
-import { objectIdToString } from "utils/tools";
+import { useLoaderData } from "@remix-run/react";
 
-type TaxonomyAndId = Omit<Taxonomy, "id"> & { _id: { ob: string } };
+import { Pagination } from "~/components/Pagination";
+import { DisplayBird } from "~/components/DisplayBird";
+import type { TaxonomyAndId } from "utils/types.server";
+import { objectIdToString } from "utils/tools.server";
 
 type LoaderData = {
   birds: TaxonomyAndId[];
@@ -16,26 +17,38 @@ type LoaderData = {
   totalBirds: number;
 };
 
-export const loader: ActionFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const url = new URL(request.url);
-  const searchParams = url.searchParams.get("page");
-  console.log(searchParams);
-  const rawData = await getTaxonomyPaginated(1, 5);
+  const searchParam = url.searchParams;
+  const page = Number(searchParam.get("page")) || 1;
+  const rawData = await getTaxonomyPaginated(page, 5);
   const data = rawData[0];
   return json(data);
 };
 
 export default function Birds() {
-  const { birds, totalBirds, page } = useLoaderData<LoaderData>();
-  console.log(birds);
+  const { birds, totalBirds, hasNextPage, hasPreviousPage, totalPages } =
+    useLoaderData<LoaderData>();
   return (
     <article>
       <h1>List of all birds</h1>
       There are {totalBirds} birds on this site!
-      {birds.map((bird) => (
-        <p key={objectIdToString(bird._id)}>{bird.englishName}</p>
+      {birds.map((bird, i) => (
+        <DisplayBird
+          key={i}
+          englishName={bird.englishName}
+          taxonomy={bird.taxonomy}
+          rank={bird.rank}
+          id={objectIdToString(bird._id)}
+          image={bird.image}
+        />
       ))}
-      <Link to={`/birds?page=1`}>{page}</Link>
+      <Pagination
+        rootPath="/birds"
+        total={totalPages}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+      ></Pagination>
     </article>
   );
 }

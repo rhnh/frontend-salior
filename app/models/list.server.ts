@@ -34,10 +34,10 @@ export async function addBirdToList({
   location = ''
 }: {
   listId: string;
-  englishName: string;
+  englishName?: string;
   birdId?: string;
   location?: string;
-  taxonomy: string
+  taxonomy?: string
 }) {
   //if birdId is provided just push
   if (birdId) {
@@ -160,4 +160,9 @@ export const deleteList = async (id: string) => {
   })
   //delete the list
   return prisma.list.delete({ where: { id } })
+}
+
+
+export const getListsByUsername = async (username: string) => {
+  return prisma.list.findMany({ where: { username }, select: { listname: true, id: true } })
 }

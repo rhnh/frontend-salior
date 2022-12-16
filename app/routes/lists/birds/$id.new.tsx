@@ -16,10 +16,15 @@ export const action: ActionFunction = async ({ params, request }) => {
   if (typeof listId !== "string") {
     throw new Error("Id must be string!");
   }
-  const foo = await addBirdToList({ listId, englishName, taxonomy, location });
+  await addBirdToList({ listId, englishName, taxonomy, location });
 
   return redirect(`/lists/${listId}`);
 };
+/**
+ * @info This is for add any Bird to specific list
+ * @returns
+ */
+
 export default function AddBird() {
   return (
     <form method="post">
