@@ -8,9 +8,9 @@ import {
   // Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { SITE_TITLE } from "utils/config";
+import { SITE_TITLE } from "utils/config.server";
 import NavBar from "./components/NavBar";
-import stylesUrl from "~/styles/app.css"
+import stylesUrl from "~/styles/app.css";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
