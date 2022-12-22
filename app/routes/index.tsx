@@ -1,9 +1,6 @@
+import { redirect } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 
-
-export default function Index() {
-  return (
-    <article className="content" style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      Hello
-    </article>
-  );
-}
+export const loader: LoaderFunction = async () => {
+  return redirect("./home");
+};

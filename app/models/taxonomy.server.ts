@@ -33,3 +33,5 @@ export async function getTaxonomyPaginated(pageNumber = 1, limit = 5) {
   const pipeline = paginationPipeLine(pageNumber, limit);
   return prisma.taxonomy.aggregateRaw({ pipeline });
 }
+
+

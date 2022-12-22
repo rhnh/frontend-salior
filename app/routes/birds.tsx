@@ -5,17 +5,9 @@ import { useLoaderData } from "@remix-run/react";
 
 import { Pagination } from "~/components/Pagination";
 import { DisplayBird } from "~/components/DisplayBird";
-import type { TaxonomyAndId } from "utils/types.server";
-import { objectIdToString } from "utils/tools.server";
 
-type LoaderData = {
-  birds: TaxonomyAndId[];
-  page: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  totalPages: number;
-  totalBirds: number;
-};
+import { objectIdToString } from "utils/tools.server";
+import type { PaginatedBirds } from "utils/types.server";
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const url = new URL(request.url);
@@ -28,7 +20,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 export default function Birds() {
   const { birds, totalBirds, hasNextPage, hasPreviousPage, totalPages } =
-    useLoaderData<LoaderData>();
+    useLoaderData<PaginatedBirds>();
   return (
     <article>
       <h1>List of all birds</h1>

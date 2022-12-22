@@ -10,6 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  user
+  contributer
+  mod
+  admin
+}
+
 // ./prisma/schema.prisma
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -17,6 +24,7 @@ model User {
   updatedAt DateTime @updatedAt
   username  String   @unique
   password  String
+  role      Role
 }
 
 type Bird {
@@ -65,7 +73,7 @@ model Taxonomy {
   credit      String?
 }
 
-model Posts {
+model Post {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
   isFeatured Boolean?
   title      String
