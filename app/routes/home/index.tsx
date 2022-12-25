@@ -6,9 +6,7 @@ import { useLoaderData } from "@remix-run/react";
 import type { PaginatedPosts } from "utils/types.server";
 import { objectIdToString } from "utils/tools.server";
 
-export const action: ActionFunction = async ({ request }) => {
-  console.log(request.headers);
-};
+export const action: ActionFunction = async ({ request }) => {};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const featuredPosts = await getPosts({
@@ -17,10 +15,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     isFeatured: true,
   });
   invariant(featuredPosts, "Invalid post");
-  console.log(request.headers);
-  const header = new Headers();
-  header.set("Content-Type", "application/json");
-  header.set("Authorization", `Bearer abc`);
+
   if (!featuredPosts[0]) return json([]);
   return json(featuredPosts[0]);
 };
