@@ -36,7 +36,7 @@ type Bird {
 model List {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   username  String
-  listname  String   @unique
+  listname  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   birds     Bird[]
