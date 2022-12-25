@@ -2,8 +2,16 @@ import type { List } from "@prisma/client";
 
 import { prisma } from "utils/prisma.server";
 
-export async function createList(list: Pick<List, "username" | "listname">) {
-  return prisma.list.create({ data: list });
+
+export const isTakenListName = async ({ username, listname }: Pick<List, "listname" | "username">): Promise<boolean> => {
+  const list = await prisma.list.findFirst({ where: { listname, username } });
+  return !!list;
+}
+
+
+export async function createList({ listname, username }: Pick<List, "username" | "listname">) {
+
+  return prisma.list.create({ data: { listname, username } });
 }
 
 export async function updateList({
@@ -16,8 +24,11 @@ export async function updateList({
   });
 }
 
-export async function getLists() {
+export async function getLists(username: string) {
   return prisma.list.findMany({
+    where: {
+      username
+    },
     select: {
       id: true,
       username: true,

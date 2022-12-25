@@ -1,9 +1,12 @@
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
+import { Dirent } from "fs";
 import invariant from "tiny-invariant";
+import { getLoggedUserId } from "utils/session.server";
 
-import { createList } from "~/models/list.server";
+import { createList, isTakenListName } from "~/models/list.server";
+import { getUserById } from "~/models/user.server";
 
 type ActionData = {
   formError?: string;
@@ -30,10 +33,38 @@ export const action: ActionFunction = async ({ request }) => {
       formError: `Form not submitted correctly. Please re-fill and submit again!`,
     });
   }
-  const result = await createList({ listname, username: "john" });
-  return redirect("/");
+  const userId = await getLoggedUserId(request);
+
+  if (!userId) {
+    return redirect("/login");
+  }
+  const user = await getUserById(userId);
+  const username = user?.username;
+  if (!username) {
+    return redirect("/login");
+  }
+  if (await isTakenListName({ username, listname })) {
+    return json(
+      { error: `list name ${listname} already exists` },
+      { status: 409 }
+    );
+  }
+
+  if (username) {
+    await createList({ listname, username });
+    return redirect("/lists");
+  }
+  return redirect("/lists");
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await getLoggedUserId(request);
+  if (userId === null || !userId) {
+    console.log("it was here");
+    return redirect("/");
+  }
+  return null;
+};
 export default function CreateList() {
   const errors = useActionData<ActionData>();
   return (
@@ -48,7 +79,7 @@ export default function CreateList() {
             </small>
           ) : null}
         </p>
-        <button>Create</button>
+        <button>Create new list</button>
       </Form>
       <Link to="/lists">back</Link>
     </section>
