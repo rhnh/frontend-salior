@@ -26,7 +26,7 @@ export const DisplayBird = ({
           <Link
             to={`/lists/birds/${id}/add?englishName=${englishName}&taxonomy=${taxonomy}`}
           >
-            Add new
+            Add To your list
           </Link>
         </p>
       </section>

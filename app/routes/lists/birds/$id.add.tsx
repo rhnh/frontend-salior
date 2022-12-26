@@ -1,17 +1,17 @@
-import {
-  ActionArgs,
-  ActionFunction,
-  LoaderArgs,
-  redirect,
-} from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, useSearchParams } from "@remix-run/react";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { getLocalAuthorizedUser } from "utils/user.server";
 import { addBirdToList, getListsByUsername } from "~/models/list.server";
 
-export async function loader({ params }: LoaderArgs) {
-  const lists = await getListsByUsername("john");
-  return json({ lists });
+export async function loader({ request }: LoaderArgs) {
+  const user = await getLocalAuthorizedUser(request);
+  if (user) {
+    const lists = await getListsByUsername(user?.username);
+    return json({ lists });
+  }
+  return json({ lists: [] });
 }
 
 export async function action({ request, params }: ActionArgs) {
@@ -33,7 +33,14 @@ export default function AddToBirdToList() {
   const { lists } = useLoaderData<typeof loader>();
   const [searchParam] = useSearchParams();
   const englishName = searchParam.get("englishName");
-
+  if (lists.length <= 0) {
+    return (
+      <section>
+        Oops, You have don't have any list.{" "}
+        <Link to="/lists/new/">Create new List</Link>
+      </section>
+    );
+  }
   return (
     <form method="post">
       Adding {englishName} to your list below {` `}

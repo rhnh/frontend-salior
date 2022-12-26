@@ -6,7 +6,7 @@ import type { ActionFunction } from "@remix-run/node";
 import {
   commitSession,
   createUserSession,
-  getLoggedUserId,
+  getLocalAuthorizedUserId,
 } from "utils/session.server";
 
 export const action: ActionFunction = async ({ request }) => {
@@ -35,7 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLoggedUserId(request);
+  const userId = await getLocalAuthorizedUserId(request);
   if (userId) {
     const user = await getUserById(userId);
     if (user?.id) {

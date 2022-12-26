@@ -1,9 +1,12 @@
 import type { Taxonomy } from "@prisma/client";
-import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { json } from "@remix-run/node";
+
+import { Link, Outlet, useLoaderData, useParams } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
 import { getListBirdById } from "~/models/list.server";
 import invariant from "tiny-invariant";
+import type { LoaderFunction } from "@remix-run/node";
+import { getLocalAuthorizedUserId } from "utils/session.server";
+import { getUserById } from "~/models/user.server";
 
 type Birds =
   | Pick<Taxonomy, "createdAt" | "updatedAt" | "englishName" | "taxonomy"> & {
@@ -21,9 +24,18 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
+  const userId = await getLocalAuthorizedUserId(request);
+  if (!userId) {
+    return redirect("/login");
+  }
+  const user = await getUserById(userId);
+  if (!user?.username) {
+    return redirect("/login");
+  }
   const id = params?.id;
   invariant(id, "Invalid list id");
-  const list = await getListBirdById(id);
+  const list = await getListBirdById(id, user?.username);
+
   return json({ list: list[0], id });
 };
 
@@ -77,5 +89,16 @@ export default function List() {
       </section>
       <Outlet />
     </article>
+  );
+}
+
+export function ErrorBoundary() {
+  const { id } = useParams();
+  return (
+    <section className="error-container">
+      <p>
+        No list with the <em>{id}</em> id found!
+      </p>
+    </section>
   );
 }

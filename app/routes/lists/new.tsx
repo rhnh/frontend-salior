@@ -1,87 +1,83 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
-import { Dirent } from "fs";
-import invariant from "tiny-invariant";
-import { getLoggedUserId } from "utils/session.server";
+import { json, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, Link, useActionData, useCatch } from "@remix-run/react";
+import { getLocalAuthorizedUserId } from "utils/session.server";
+import type { ActionFunction } from "@remix-run/node";
 
-import { createList, isTakenListName } from "~/models/list.server";
 import { getUserById } from "~/models/user.server";
-
-type ActionData = {
-  formError?: string;
-  fieldErrors?: {
-    listname: string | undefined;
-  };
-  fields?: {
-    listname: string;
-  };
-};
-const badRequest = (data: ActionData) => json(data, { status: 400 });
+import { createList, isTakenListName } from "~/models/list.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const form = await request.formData();
-  const listname = await form.get("listname");
-  invariant(listname, "Please Provide a valid list name!");
-  const errors = {};
-  // return data if we have errors
-  if (Object.keys(errors).length) {
-    return json(errors, { status: 422 });
-  }
-  if (typeof listname !== "string" || listname.length < 3) {
-    return badRequest({
-      formError: `Form not submitted correctly. Please re-fill and submit again!`,
-    });
-  }
-  const userId = await getLoggedUserId(request);
-
+  const userId = await getLocalAuthorizedUserId(request);
   if (!userId) {
     return redirect("/login");
   }
   const user = await getUserById(userId);
   const username = user?.username;
-  if (!username) {
-    return redirect("/login");
+  const form = await request.formData();
+  const listname = form.get("listname") as string;
+  if (!listname || listname === "") {
+    return json({ error: `Error: bad input` }, { status: 401 });
   }
-  if (await isTakenListName({ username, listname })) {
+  if (!username) {
+    return json({ error: `You must be logged in ` }, { status: 400 });
+  }
+  const isTaken = await isTakenListName({ username, listname });
+  if (isTaken) {
     return json(
-      { error: `list name ${listname} already exists` },
-      { status: 409 }
+      { error: `You have already a list with the name ${listname} ` },
+      { status: 401 }
     );
   }
-
-  if (username) {
-    await createList({ listname, username });
-    return redirect("/lists");
-  }
+  await createList({ username, listname });
   return redirect("/lists");
 };
-
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLoggedUserId(request);
-  if (userId === null || !userId) {
-    console.log("it was here");
-    return redirect("/");
+  const userId = await getLocalAuthorizedUserId(request);
+  if (!userId) {
+    return redirect("/login");
   }
   return null;
 };
 export default function CreateList() {
-  const errors = useActionData<ActionData>();
+  const data = useActionData();
+  const error = data?.error;
   return (
     <section>
       <Form method="post">
+        {error && <p style={{ color: "red" }}> {error}</p>}
         <label htmlFor="listname">List name</label>
         <input id="listname" name="listname" type="text" />
-        <p>
-          {errors?.fieldErrors ? (
-            <small style={{ color: "red" }}>
-              {errors?.fieldErrors?.listname} has to be filled correctly!
-            </small>
-          ) : null}
-        </p>
         <button>Create new list</button>
       </Form>
       <Link to="/lists">back</Link>
     </section>
   );
+}
+
+export function ErrorBoundary() {
+  return (
+    <section className="error-container">
+      Something unexpected went wrong. Sorry about that.
+    </section>
+  );
+}
+
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 401) {
+    return (
+      <section className="error-container">
+        <p>You must be logged in to create a joke.</p>
+        <Link to="/login">Login</Link>
+      </section>
+    );
+  } else {
+    return (
+      <section>
+        <p>Something went wrong</p>
+        <a href="/">Home</a>
+      </section>
+    );
+  }
 }

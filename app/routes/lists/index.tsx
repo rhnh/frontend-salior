@@ -3,7 +3,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { getLists } from "~/models/list.server";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { List } from "@prisma/client";
-import { getLoggedUserId } from "utils/session.server";
+import { getLocalAuthorizedUserId } from "utils/session.server";
 import { getUserById } from "~/models/user.server";
 
 type LoaderData = {
@@ -11,7 +11,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLoggedUserId(request);
+  const userId = await getLocalAuthorizedUserId(request);
   if (!userId) {
     return redirect("/login");
   }
@@ -21,8 +21,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/login");
   }
   const lists = await getLists(username);
-  console.log(lists);
-  console.log(userId);
   if (lists?.length <= 0) {
     return json([]);
   }

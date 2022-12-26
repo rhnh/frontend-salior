@@ -17,8 +17,10 @@ import {
 import { SITE_TITLE } from "utils/config.server";
 import NavBar from "./components/NavBar";
 import stylesUrl from "~/styles/app.css";
-import { getLoggedUserId } from "utils/session.server";
+import { getLocalAuthorizedUserId } from "utils/session.server";
 import { getUserById } from "./models/user.server";
+import type { ReactNode } from "react";
+import { getLocalAuthorizedUser } from "utils/user.server";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: stylesUrl }];
@@ -31,22 +33,16 @@ export const meta: MetaFunction = () => ({
 });
 
 type LoaderData = {
-  isLogged: boolean;
+  isAuthorized: boolean;
 };
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLoggedUserId(request);
-  if (userId) {
-    const user = await getUserById(userId);
-    if (user?.id) {
-      return json<LoaderData>({ isLogged: true });
-    }
-    return json<LoaderData>({ isLogged: false });
-  }
-  return json<LoaderData>({ isLogged: false });
+  const authorizedUser = await getLocalAuthorizedUser(request);
+  if (!authorizedUser) return json<LoaderData>({ isAuthorized: false });
+  else return json<LoaderData>({ isAuthorized: true });
 };
 
-export default function App() {
-  const { isLogged } = useLoaderData<LoaderData>();
+function Document({ children, title }: { children: ReactNode; title: string }) {
+  const { isAuthorized: isLogged } = useLoaderData<LoaderData>() || false;
   return (
     <html lang="en">
       <head>
@@ -58,7 +54,7 @@ export default function App() {
           <header>
             <NavBar isLogged={isLogged} />
           </header>
-          <Outlet />
+          {children}
           <footer>footer</footer>
           <ScrollRestoration />
           {/* <Scripts /> */}
@@ -66,5 +62,24 @@ export default function App() {
         </main>
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return (
+    <Document title="Safarilive.org">
+      <Outlet />
+    </Document>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <Document title="Error!">
+      <section className="error-container">
+        <h1>App Error</h1>
+        <pre>{error.message}</pre>
+      </section>
+    </Document>
   );
 }

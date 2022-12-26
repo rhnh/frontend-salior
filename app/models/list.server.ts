@@ -9,9 +9,10 @@ export const isTakenListName = async ({ username, listname }: Pick<List, "listna
 }
 
 
-export async function createList({ listname, username }: Pick<List, "username" | "listname">) {
-
-  return prisma.list.create({ data: { listname, username } });
+export async function createList({ listname, username }:
+  Pick<List, "username" | "listname">) {
+  const result = prisma.list.create({ data: { listname, username } });
+  return result
 }
 
 export async function updateList({
@@ -59,13 +60,17 @@ export async function addBirdToList({
   }
 
   //Search if the bird already in Taxonomy, find it and add to the list
+  console.log('Here, findFirst', englishName)
+
   const bird = await prisma.taxonomy.findFirst({
     where: {
       isApproved: true,
       englishName,
+    },
+    select: {
+      id: true
     }
   })
-
   if (bird?.id) {
     return prisma.list.update({
       where: { id },
@@ -95,7 +100,8 @@ export const removeBirdById = async (id: string, listId: string) => {
     where: {
       id,
       isApproved: true
-    }
+    },
+    select: { id: true }
   });
 
   if (!approvedTaxonomy) {
@@ -108,18 +114,18 @@ export const removeBirdById = async (id: string, listId: string) => {
    * 1. get the list of birds and save in temp. find and remove the bird
    * 2. update with the list new with temp
    */
-  const temp = await prisma.list.findFirst({
+  const tempListById = await prisma.list.findUnique({
     where: { id: listId },
   })
 
-  const b = temp?.birds.filter(bird => {
+  const tempBirds = tempListById?.birds.filter(bird => {
     return bird.birdId !== id
   });
-  return prisma.list.update({ where: { id: listId }, data: { birds: b } })
+  return prisma.list.update({ where: { id: listId }, data: { birds: tempBirds } })
 
 }
 
-export async function getListBirdById(listId: string) {
+export async function getListBirdById(listId: string, username: string) {
   //@TODO
   // because of bug in aggregateRaw in Prisma
   const mara = await prisma.list.findUnique({ where: { id: listId } })
@@ -130,7 +136,7 @@ export async function getListBirdById(listId: string) {
         {
           '$match': {
             listname: mara?.listname,
-            username: mara?.username
+            username: username
           }
         }, {
           '$lookup': {
@@ -160,7 +166,7 @@ export async function getListBirdById(listId: string) {
 
 export const deleteList = async (id: string) => {
   //Search for the birds which are in give list
-  const list = await prisma.list.findFirst({ where: { id } })
+  const list = await prisma.list.findUnique({ where: { id } })
   const birds = list?.birds;
   // delete all the birds unless the approved
   birds?.forEach(async bird => {

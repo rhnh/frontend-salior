@@ -27,7 +27,7 @@ function getUserSession(request: Request) {
   return getSession(request.headers.get("Cookie"));
 }
 
-export async function getLoggedUserId(request: Request) {
+export async function getLocalAuthorizedUserId(request: Request) {
   const session = await getUserSession(request);
   const userId = session.get("userId");
   if (!userId || typeof userId !== "string") return null;
