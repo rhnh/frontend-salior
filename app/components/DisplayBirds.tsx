@@ -1,17 +1,22 @@
+
 import { Link } from "react-router-dom";
 import type { TaxonomyAndId } from "utils/types.server";
 
-export const DisplayBird = ({
+export const DisplayBirds = ({
   taxonomy,
   englishName,
   rank,
   image,
   id,
-}: Partial<TaxonomyAndId>) => {
+  isAuthorized
+}: Partial<TaxonomyAndId> & { isAuthorized: boolean }) => {
+
   return (
     <article style={{ display: "flex", gap: "4px" }}>
       <section>
-        <img src="" alt="" width={100} height={100} />
+        <Link to={`/taxonomy/${id}`}>
+          <img src="" alt="" width={100} height={100} />
+        </Link>
       </section>
       <section>
         <dl>
@@ -26,9 +31,19 @@ export const DisplayBird = ({
           <Link
             to={`/lists/birds/${id}/add?englishName=${englishName}&taxonomy=${taxonomy}`}
           >
-            Add To your list
+            Add new
           </Link>
         </p>
+        {isAuthorized === true ?
+          <>
+            <p>
+              <Link to={`/`}>edit</Link>
+            </p>
+            <p>
+              <Link to={`/`}>delete</Link>
+            </p>
+          </>
+          : null}
       </section>
     </article>
   );
