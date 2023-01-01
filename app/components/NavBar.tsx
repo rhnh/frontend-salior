@@ -2,7 +2,10 @@ import { NavLink } from "@remix-run/react";
 
 import type { FC } from "react";
 
-const NavBar: FC<{ isLogged: boolean, username?: string }> = ({ isLogged, username }) => {
+const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
+  isLogged,
+  username,
+}) => {
   return (
     <nav>
       <NavLink to="/">SafariLive.org</NavLink>
@@ -22,23 +25,22 @@ const NavBar: FC<{ isLogged: boolean, username?: string }> = ({ isLogged, userna
         {!isLogged ? (
           <>
             <li>
-              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/users/login">Login</NavLink>
             </li>
             <li>
-              <NavLink to="/register">Register</NavLink>
+              <NavLink to="/users/register">Register</NavLink>
             </li>
           </>
         ) : (
           <>
             <li>
-              <NavLink to="/profile">{username}</NavLink>
+              <NavLink to="/users/profile">{username}</NavLink>
             </li>
             <li>
-              <NavLink to="/logout">Logout</NavLink>
+              <NavLink to="/users/logout">Logout</NavLink>
             </li>
           </>
         )}
-
       </ul>
     </nav>
   );
