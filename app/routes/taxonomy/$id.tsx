@@ -1,11 +1,14 @@
 import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { getLocalAuthorizedUser, isAuthorizedUser } from "utils/user.server";
+import {
+  getLocalAuthenticatedUser,
+  isAuthorizedUser,
+} from "~/utils/user.server";
 import { getTaxonomyById } from "~/models/taxonomy.server";
 import type { LoaderFunction } from "@remix-run/node";
 import type { Bird } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
-import type { TaxonomyAndId } from "utils/types.server";
+import type { TaxonomyAndId } from "~/utils/types.server";
 import { Link } from "react-router-dom";
 
 interface LoaderData extends Partial<TaxonomyAndId> {
@@ -17,7 +20,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const data = await getTaxonomyById(id);
 
   //authorization
-  const authorizedUser = await getLocalAuthorizedUser(request);
+  const authorizedUser = await getLocalAuthenticatedUser(request);
   if (!authorizedUser) return redirect("/users/login");
   const isAuthorized = isAuthorizedUser(authorizedUser?.role);
   if (data) {

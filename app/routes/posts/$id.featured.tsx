@@ -4,17 +4,17 @@ import { getPostById, setFeaturedPost } from "~/models/post.server";
 import { redirect, json } from "@remix-run/node";
 import type { Post } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
-import { getLocalAuthorizedUser } from "utils/user.server";
-import { getLocalAuthorizedUserId } from "utils/session.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
+import { getLocalAuthenticatedUserId } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ params, request }) => {
   const id = params.id;
   invariant(id, "Invalid id");
   const post: Post = (await getPostById(id)) as Post;
   invariant(post, "Post not found");
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
   if (!user) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   if (
     user.role === "admin" ||
@@ -34,7 +34,7 @@ export const loader: ActionFunction = async ({ request, params }) => {
   const post = await getPostById(id);
   invariant(post, "Post not found");
 
-  const isAuthorizedUser = await getLocalAuthorizedUser(request);
+  const isAuthorizedUser = await getLocalAuthenticatedUser(request);
   if (
     (isAuthorizedUser && isAuthorizedUser.role === "admin") ||
     isAuthorizedUser?.role === "contributor" ||

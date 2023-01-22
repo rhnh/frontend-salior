@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import type { TaxonomyAndId } from "utils/types.server";
+import type { TaxonomyAndId } from "~/utils/types.server";
 
 export const DisplayBirds = ({
   taxonomy,
@@ -8,9 +7,11 @@ export const DisplayBirds = ({
   rank,
   image,
   id,
-  isAuthorized
+  isAuthorized,
 }: Partial<TaxonomyAndId> & { isAuthorized: boolean }) => {
-
+  if (id === undefined) {
+    return <p>Wow</p>;
+  }
   return (
     <article style={{ display: "flex", gap: "4px" }}>
       <section>
@@ -34,7 +35,7 @@ export const DisplayBirds = ({
             Add new
           </Link>
         </p>
-        {isAuthorized === true ?
+        {isAuthorized === true ? (
           <>
             <p>
               <Link to={`/`}>edit</Link>
@@ -43,7 +44,7 @@ export const DisplayBirds = ({
               <Link to={`/`}>delete</Link>
             </p>
           </>
-          : null}
+        ) : null}
       </section>
     </article>
   );

@@ -3,7 +3,7 @@ import type { ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { getLocalAuthorizedUser } from "utils/user.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
 import { getPostById } from "~/models/post.server";
 
 type LoaderData = {
@@ -15,8 +15,8 @@ type LoaderData = {
 export const loader: ActionFunction = async ({ request, params }) => {
   const id = params.id;
   invariant(id, "Invalid post id");
-  const user = await getLocalAuthorizedUser(request);
-  if (!user) return redirect("/login");
+  const user = await getLocalAuthenticatedUser(request);
+  if (!user) return redirect("/users/login");
   const owner = user.username;
   const role = user.role;
   const post = await getPostById(id);
@@ -28,7 +28,6 @@ export const loader: ActionFunction = async ({ request, params }) => {
 export default function ArticleById() {
   const { title, body, isOwner, role } = useLoaderData<LoaderData>();
   const isAuthorized = role === "admin" || role === "mod";
-  console.log(isAuthorized, "isAuthorized", isOwner);
   return (
     <article>
       <h3>{title}</h3>

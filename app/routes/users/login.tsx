@@ -1,41 +1,48 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
 
 import { getUser, getUserById } from "~/models/user.server";
 import type { ActionFunction } from "@remix-run/node";
 import {
   commitSession,
   createUserSession,
-  getLocalAuthorizedUserId,
-} from "utils/session.server";
+  getLocalAuthenticatedUserId,
+} from "~/utils/session.server";
+import {
+  Form,
+  Link,
+  useActionData,
+  useCatch,
+  useTransition,
+} from "@remix-run/react";
+import type { SaliorResponse } from "~/utils/types.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.formData();
   const password: string = (form.get("password") as string) || "";
   const username: string = (form.get("username") as string) || "";
-  const newUser = await getUser({ password, username });
-  if (!newUser) {
-    return json(
-      {
-        error: `Incorrect Username/Password!`,
-      },
-      { status: 409 }
-    );
+  const user = await getUser({ password, username });
+
+  if (!user) {
+    throw new Response(`You have enter wrong username or password`, {
+      status: 409,
+    });
   }
 
-  const session = await createUserSession(newUser.id);
-  if (typeof session === "object")
+  const session = await createUserSession(user.id);
+
+  if (typeof session === "object") {
     return redirect("/", {
       headers: {
         "Set-Cookie": await commitSession(session),
       },
     });
-
-  return json({ error: `Something went wrong while login` }, { status: 409 });
+  }
+  throw new Response("Something went wrong", { status: 500 });
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLocalAuthorizedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request);
   if (userId) {
     const user = await getUserById(userId);
     if (user?.id) {
@@ -44,13 +51,15 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
   return null;
 };
-
-const Login = () => {
+export default function Login() {
+  const actionData = useActionData<SaliorResponse>();
+  const transition = useTransition();
+  const state = transition.state ? transition.state : actionData?.state;
   return (
     <article className="content">
-      <section className="vh-centered">
+      <section>
         <h3>Login</h3>
-        <form method="post">
+        <Form method="post">
           <p>
             <label htmlFor="username">Username</label>
             <input type="text" id="username" name="username" />
@@ -59,13 +68,39 @@ const Login = () => {
             <label htmlFor="password">Password</label>
             <input type="password" id="password" name="password" />
           </p>
+          {actionData?.state === "ERROR" ? (
+            <p className="error-message" style={{ color: "red" }}>
+              {actionData.message}
+            </p>
+          ) : null}
           <p>
-            <button type="submit">Login</button>
+            <button type="submit" disabled={state === "submitting"}>
+              {state === "submitting" ? "logging" : "login"}
+            </button>
           </p>
-        </form>
+        </Form>
       </section>
     </article>
   );
-};
+}
 
-export default Login;
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 409) {
+    return (
+      <section className="error-container">
+        <p>{caught.data}</p>
+        <Link to="/users/login">Try again</Link>
+        Click here to <Link to="/users/register">register</Link> a new account.
+      </section>
+    );
+  } else if (caught.status == 500) {
+    return (
+      <section>
+        <p>Something went wrong</p>
+        <Link to="/users/login">Try again</Link>
+      </section>
+    );
+  }
+}

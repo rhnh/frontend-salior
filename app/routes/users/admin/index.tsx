@@ -1,13 +1,15 @@
-import { json, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 
 import { Link } from "react-router-dom";
-import { getLocalAuthorizedUser, isAuthorizedUser } from "utils/user.server";
-import { useLoaderData } from "@remix-run/react";
-import { destroySession, getSession } from "utils/session.server";
+import {
+  getLocalAuthenticatedUser,
+  isAuthorizedUser,
+} from "~/utils/user.server";
+import { destroySession, getSession } from "~/utils/session.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
 
   //if not logged in
   const isAuthorized = isAuthorizedUser(user?.role || "user");
@@ -18,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (isAuthorized === false) {
     const session = await getSession(request.headers.get("Cookie"));
     if (typeof session === "object") {
-      return redirect("/login", {
+      return redirect("/users/login", {
         headers: {
           "Set-Cookie": await destroySession(session),
         },
@@ -28,15 +30,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 export default function Index() {
-  const data = useLoaderData();
-
   return (
     <section>
       <p>
         <Link to="users">Users</Link>
       </p>
       <p>
-        <Link to="users">Taxonomies</Link>
+        <Link to="/taxonomy/verify">Taxonomies</Link>
       </p>
     </section>
   );

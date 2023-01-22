@@ -1,6 +1,6 @@
-import type { User } from "@prisma/client";
-import { prisma } from "utils/prisma.server";
-import { authenticated, createHashedPassword } from "utils/user.server";
+import type { Role, User } from "@prisma/client";
+import { prisma } from "~/utils/prisma.server";
+import { authenticated, createHashedPassword } from "~/utils/user.server";
 import { userPipeLine } from "./userPipeline.server";
 
 export const isUsernameTaken = async (username: string): Promise<boolean> => {
@@ -70,4 +70,41 @@ export async function getPaginatedUsers({
   return prisma.user.aggregateRaw({
     pipeline,
   });
+}
+
+
+export async function setRole({ role, id }: { role: Role, id: string }) {
+  return prisma.user.update({
+    where: {
+      id
+    },
+    data: {
+      role
+    },
+  })
+}
+
+
+export async function changePassword({ id, currentPassword, newPassword }:
+  { id: string, currentPassword: string, newPassword: string }): Promise<boolean> {
+  const user = await prisma.user.findUnique({ where: { id } })
+  if (!user) {
+    return false
+  }
+  const isAuthorizedUser = await authenticated({ password: currentPassword, hashedPassword: user.password });
+  if (isAuthorizedUser) {
+    const hashedPassword = await createHashedPassword(newPassword);
+    const result = await prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        password: hashedPassword
+      }
+    })
+    if (result) { return true; }
+    return false
+  }
+
+  return false;
 }

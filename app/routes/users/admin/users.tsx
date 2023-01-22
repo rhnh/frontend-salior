@@ -1,16 +1,18 @@
 import { json, redirect } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
-import { getLocalAuthorizedUser, isAuthorizedUser } from "utils/user.server";
+import {
+  getLocalAuthenticatedUser,
+  isAuthorizedUser,
+} from "~/utils/user.server";
 import { getPaginatedUsers } from "~/models/user.server";
-import { useLoaderData } from "@remix-run/react";
-import { destroySession, getSession } from "utils/session.server";
-import { objectIdToString } from "utils/tools.server";
+import { Link, useLoaderData } from "@remix-run/react";
+import { destroySession, getSession } from "~/utils/session.server";
 import type { Prisma, Role } from "@prisma/client";
-import { ObjectId, ObjectID } from "bson";
+import { Fragment } from "react";
 type LoaderData = {
   users: [
     {
-      _id: string;
+      _id: { $oid: string };
       createdAt: { $date: string };
       updatedAt: { $date: string };
       username: string;
@@ -24,18 +26,25 @@ type LoaderData = {
   totalUsers: number;
 };
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
   //if not logged in
   const isAuthorized = isAuthorizedUser(user?.role || "user");
   if (!user) {
-    return redirect("/users/login");
+    const session = await getSession(request.headers.get("Cookie"));
+    if (typeof session === "object") {
+      return redirect("/users/login", {
+        headers: {
+          "Set-Cookie": await destroySession(session),
+        },
+      });
+    }
   }
 
   //force logout
   if (isAuthorized === false) {
     const session = await getSession(request.headers.get("Cookie"));
     if (typeof session === "object") {
-      return redirect("/login", {
+      return redirect("/users/login", {
         headers: {
           "Set-Cookie": await destroySession(session),
         },
@@ -55,11 +64,21 @@ export default function User() {
 
   return (
     <article>
-      <section>
-        {users.map((user) => (
-          <p key={user._id}>{user.username}</p>
-        ))}
-      </section>
+      {users.map((user) => (
+        <Fragment key={user._id.$oid}>
+          <dl>
+            <hr></hr>
+            <dt>Name:</dt>
+            <dd> {user.username}</dd>
+            <dt>Role:</dt>
+            <dd>{user.role}</dd>
+            <dt>Registered since: </dt>
+            <dd>{user.createdAt.$date}</dd>
+          </dl>
+          <Link to={`/users/admin/${user._id.$oid}/role`}>Change Role</Link>
+          <Link to={`/users/admin/${user._id.$oid}/remove`}>Delete</Link>
+        </Fragment>
+      ))}
     </article>
   );
 }

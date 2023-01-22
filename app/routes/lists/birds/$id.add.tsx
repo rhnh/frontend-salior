@@ -2,11 +2,12 @@ import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData, useSearchParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { getLocalAuthorizedUser } from "utils/user.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
 import { addBirdToList, getListsByUsername } from "~/models/list.server";
 
 export async function loader({ request }: LoaderArgs) {
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
+
   if (user) {
     const lists = await getListsByUsername(user?.username);
     return json({ lists });
@@ -45,9 +46,7 @@ export default function AddToBirdToList() {
     <form method="post">
       Adding {englishName} to your list below {` `}
       <select name="listId" id="listId">
-        <option value={0} selected>
-          Select your list
-        </option>
+        <option value={0}>Select your list</option>
         {lists.map((list, i) => (
           <option value={list.id} key={list.id}>
             {list.listname}

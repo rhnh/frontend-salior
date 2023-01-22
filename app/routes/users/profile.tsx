@@ -1,11 +1,14 @@
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { Link } from "react-router-dom";
-import { getLocalAuthorizedUser, isAuthorizedUser } from "utils/user.server";
+import {
+  getLocalAuthenticatedUser,
+  isAuthorizedUser,
+} from "~/utils/user.server";
 import type { LoaderFunction } from "@remix-run/node";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
   if (!user) {
     return redirect("/users/login");
   }
@@ -16,11 +19,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Profile() {
   const { isAuthorized, users } = useLoaderData();
-  console.log(users);
   return (
     <article>
       <section>
-        {isAuthorized === true ? <Link to="/users/admin">admin</Link> : null}
+        {isAuthorized === true ? (
+          <>
+            <Link to="/users/admin">Admin Panel</Link>
+          </>
+        ) : null}
+      </section>
+      <section>
+        <Link to="/users/password">Change Password</Link>
       </section>
     </article>
   );

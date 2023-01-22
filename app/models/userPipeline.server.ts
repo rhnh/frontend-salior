@@ -18,7 +18,7 @@ export const userPipeLine = ({
         users: [
           {
             $addFields: {
-              _id: "_id",
+              username: "$username"
             },
           },
         ],

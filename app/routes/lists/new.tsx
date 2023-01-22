@@ -1,15 +1,15 @@
 import { json, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useCatch } from "@remix-run/react";
-import { getLocalAuthorizedUserId } from "utils/session.server";
+import { getLocalAuthenticatedUserId } from "~/utils/session.server";
 import type { ActionFunction } from "@remix-run/node";
 
 import { getUserById } from "~/models/user.server";
 import { createList, isTakenListName } from "~/models/list.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const userId = await getLocalAuthorizedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request);
   if (!userId) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   const user = await getUserById(userId);
   const username = user?.username;
@@ -28,13 +28,14 @@ export const action: ActionFunction = async ({ request }) => {
       { status: 401 }
     );
   }
-  await createList({ username, listname });
+  const result = await createList({ username, listname });
+  console.log(result);
   return redirect("/lists");
 };
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLocalAuthorizedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request);
   if (!userId) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   return null;
 };
@@ -69,7 +70,7 @@ export function CatchBoundary() {
     return (
       <section className="error-container">
         <p>You must be logged in to create a joke.</p>
-        <Link to="/login">Login</Link>
+        <Link to="/users/login">Login</Link>
       </section>
     );
   } else {
