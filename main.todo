@@ -1,4 +1,18 @@
-# Refactor
-☐ add transition
-# Features
-☐ Design
+Refactor/Fixed :
+  ☐ add transition
+  ✔ Pagination @done(23-02-21 23:00)
+Features :
+  Admin Panel:
+    ☐ Delete: bird
+     ☐ Edit: bird
+  Taxonomy: 
+    ☐ Add: search button
+  Design:
+    ☐ Edit: Design
+  About Page: 
+    ☐ Edit: About Page :  
+    ☐ Add: Add links credits 
+    ☐ Add: useful to informative website/videos links
+  Profile :
+    ☐ Add Avatar
+The site should would completely without JS
