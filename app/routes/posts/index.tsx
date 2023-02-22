@@ -2,8 +2,7 @@ import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { getPosts } from "~/models/post.server";
-import { objectIdToString } from "utils/tools.server";
-import type { PostWithId } from "utils/types.server";
+import type { PostWithId } from "~/utils/types.server";
 
 /**
  * @todo ! get params and page numbers
@@ -31,12 +30,11 @@ export default function PostRouter() {
   if (posts?.length <= 0 || !posts) {
     return <p>No Post found</p>;
   }
-
   return (
     <article>
       {posts.map((post) => (
-        <section key={objectIdToString(post._id)}>
-          <Link to={`${objectIdToString(post._id)}`}>
+        <section key={post._id.$oid}>
+          <Link to={`${post._id.$oid}`}>
             <h3>{post.title}</h3>
           </Link>
           <p>{post.body}</p>

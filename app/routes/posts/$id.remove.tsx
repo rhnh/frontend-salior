@@ -4,7 +4,7 @@ import { deletePostById, getPostById } from "~/models/post.server";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { Post } from "@prisma/client";
 import type { ActionFunction } from "@remix-run/node";
-import { getLocalAuthorizedUser } from "utils/user.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
 
 export const loader: ActionFunction = async ({ params }) => {
   const id = params.id;
@@ -17,9 +17,9 @@ export const loader: ActionFunction = async ({ params }) => {
 export const action: ActionFunction = async ({ request, params }) => {
   const id = params.id;
   invariant(id, "Invalid id");
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
   if (!user) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   if (
     user.role === "admin" ||

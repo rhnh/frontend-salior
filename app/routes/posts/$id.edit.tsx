@@ -3,7 +3,7 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { getLocalAuthorizedUser } from "utils/user.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
 import { getPostById, updatePostById } from "~/models/post.server";
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -12,9 +12,9 @@ export const action: ActionFunction = async ({ request, params }) => {
   invariant(id, "Invalid id");
   const title: string = form.get("title")?.toString() || "";
   const body: string = form.get("body")?.toString() || "";
-  const user = await getLocalAuthorizedUser(request);
+  const user = await getLocalAuthenticatedUser(request);
   if (!user) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   await updatePostById({ id, title, body, username: user.username });
   return redirect(`/posts/${id}`);

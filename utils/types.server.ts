@@ -1,7 +1,7 @@
 import type { Post, Taxonomy } from "@prisma/client";
 
-export type TaxonomyAndId = Taxonomy & { _id: { ob: string } };
-export type PostWithId = Post & { _id: { ob: string } };
+export type TaxonomyAndId = Taxonomy & { _id: { '$oid': string } };
+export type PostWithId = Post & { _id: { '$oid': string } };
 
 
 export interface Paginated {

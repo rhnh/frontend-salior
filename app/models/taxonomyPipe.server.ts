@@ -99,7 +99,10 @@ export const unApprovedPipe = [
                 role: "admin",
               },
               {
-                role: "con",
+                role: "contributor",
+              },
+              {
+                role: "mod",
               },
             ],
           },
@@ -139,23 +142,23 @@ export const ancestorsPipeLine = ({
   r: RegExp;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any[] => [
-  {
-    $match: {
-      ancestors: p,
-      rank: r,
-      isApproved: true,
+    {
+      $match: {
+        ancestors: p,
+        rank: r,
+        isApproved: true,
+      },
     },
-  },
-  {
-    $project: {
-      ancestors: 1,
-      _id: 0,
+    {
+      $project: {
+        ancestors: 1,
+        _id: 0,
+      },
     },
-  },
-  {
-    $limit: 1,
-  },
-];
+    {
+      $limit: 1,
+    },
+  ];
 
 export const getByUserPipeLine = ({
   username,
@@ -164,18 +167,18 @@ export const getByUserPipeLine = ({
   username: string;
   listName: string;
 }): any[] => [
-  {
-    $match: {
-      listName,
-      username,
+    {
+      $match: {
+        listName,
+        username,
+      },
     },
-  },
-  {
-    $lookup: {
-      from: "taxonomies",
-      localField: "birds.birdId",
-      foreignField: "_id",
-      as: "string",
+    {
+      $lookup: {
+        from: "taxonomies",
+        localField: "birds.birdId",
+        foreignField: "_id",
+        as: "string",
+      },
     },
-  },
-];
+  ];

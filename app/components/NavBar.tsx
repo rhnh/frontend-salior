@@ -1,9 +1,11 @@
-import type { LoaderFunction } from "@remix-run/node";
 import { NavLink } from "@remix-run/react";
 
 import type { FC } from "react";
 
-const NavBar: FC<{ isLogged: boolean }> = ({ isLogged }) => {
+const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
+  isLogged,
+  username,
+}) => {
   return (
     <nav>
       <NavLink to="/">SafariLive.org</NavLink>
@@ -17,21 +19,28 @@ const NavBar: FC<{ isLogged: boolean }> = ({ isLogged }) => {
         <li>
           <NavLink to="/lists">Lists</NavLink>
         </li>
-        {!isLogged ? (
-          <>
-            <li>
-              <NavLink to="/login">Login</NavLink>
-            </li>
-            <li>
-              <NavLink to="/register">Register</NavLink>
-            </li>
-          </>
-        ) : (
-          <NavLink to="/logout">Logout</NavLink>
-        )}
         <li>
           <NavLink to="/about">About</NavLink>
         </li>
+        {!isLogged ? (
+          <>
+            <li>
+              <NavLink to="/users/login">Login</NavLink>
+            </li>
+            <li>
+              <NavLink to="/users/register">Register</NavLink>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <NavLink to="/users/profile">{username}</NavLink>
+            </li>
+            <li>
+              <NavLink to="/users/logout">Logout</NavLink>
+            </li>
+          </>
+        )}
       </ul>
     </nav>
   );

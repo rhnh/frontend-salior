@@ -1,5 +1,5 @@
 import type { Post } from "@prisma/client";
-import { prisma } from "utils/prisma.server"
+import { prisma } from "~/utils/prisma.server"
 import { postPipeline } from "./postPipeline.server";
 
 export const createUserPost = async (post:

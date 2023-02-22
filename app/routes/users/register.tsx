@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Form, Link, useCatch } from "@remix-run/react";
 import { redirect } from "@remix-run/node";
 import { createUser, isUsernameTaken } from "~/models/user.server";
 import type { LoaderFunction } from "@remix-run/node";
@@ -10,8 +10,9 @@ export const action: LoaderFunction = async ({ request }) => {
   const username: string = (form.get("username") as string) || "";
   const isTaken = await isUsernameTaken(username);
   if (isTaken) {
-    return json({
-      error: `Username ${username} already taken. Please retry with other username`,
+    throw new Response(`Username ${username} has been already taken!`, {
+      status: 401,
+      statusText: `Please try again with different username`,
     });
   }
   const newUser = await createUser({ username, password });
@@ -23,12 +24,12 @@ export const action: LoaderFunction = async ({ request }) => {
   });
 };
 
-const Register = () => {
+export default function Register() {
   return (
     <article className="content">
       <article className="card">
         <section className="vh-centered">
-          <form method="post">
+          <Form method="post">
             <p>
               <label htmlFor="username">Username</label>
               <input type="text" id="username" name="username" />
@@ -48,14 +49,29 @@ const Register = () => {
             <p>
               <button type="submit">Register</button>
             </p>
-          </form>
-        </section>
-        <section>
-          <Link to="register">Register</Link>
+          </Form>
         </section>
       </article>
     </article>
   );
-};
+}
 
-export default Register;
+export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 401) {
+    return (
+      <section className="error-container">
+        <p>{caught.data}</p>
+        <Link to="/users/register">Try again</Link>
+      </section>
+    );
+  } else {
+    return (
+      <section>
+        <p>Something went wrong</p>
+        <a href="/">Home</a>
+      </section>
+    );
+  }
+}

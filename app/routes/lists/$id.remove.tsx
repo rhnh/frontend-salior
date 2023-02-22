@@ -4,7 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { deleteList } from "~/models/list.server";
-import { getLocalAuthorizedUser } from "utils/user.server";
+import { getLocalAuthenticatedUser } from "~/utils/user.server";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const url = new URL(request.url);
@@ -16,9 +16,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export const action: ActionFunction = async ({ request, params }) => {
   const id = params.id;
   invariant(id, "Invalid id");
-  const authorizedUser = await getLocalAuthorizedUser(request);
+  const authorizedUser = await getLocalAuthenticatedUser(request);
   if (!authorizedUser) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   await deleteList(id);
   return redirect("/lists");

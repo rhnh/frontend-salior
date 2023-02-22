@@ -5,7 +5,7 @@ import { json, redirect } from "@remix-run/node";
 import { getListBirdById } from "~/models/list.server";
 import invariant from "tiny-invariant";
 import type { LoaderFunction } from "@remix-run/node";
-import { getLocalAuthorizedUserId } from "utils/session.server";
+import { getLocalAuthenticatedUserId } from "~/utils/session.server";
 import { getUserById } from "~/models/user.server";
 
 type Birds =
@@ -24,13 +24,13 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const userId = await getLocalAuthorizedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request);
   if (!userId) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   const user = await getUserById(userId);
   if (!user?.username) {
-    return redirect("/login");
+    return redirect("/users/login");
   }
   const id = params?.id;
   invariant(id, "Invalid list id");
