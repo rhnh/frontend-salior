@@ -1,12 +1,5 @@
 import { Link, useSearchParams } from "react-router-dom";
-import { getNextPages } from "~/tools/pagination-tools";
-
-const previous = (page: number = 0) => (page > 0 ? page - 1 : 1);
-const next = (page: number = 0, total: number) =>
-  page < total ? page + 1 : total;
-
-const firstTwo = (total: number) =>
-  total > 2 ? Array.from(new Array(4).keys()) : [1];
+import { getRowPageNumbers, next, previous } from "~/tools/pagination-tools";
 
 export const Pagination = ({
   total,
@@ -34,9 +27,8 @@ export const Pagination = ({
       <section style={{ display: "flex", justifyContent: "space-between" }}>
         <Link to={`${rootPath}?page=1`}>First</Link>
         {<Link to={`${rootPath}?page=${previous(currentPage)}`}>previous</Link>}
-        {getNextPages({
+        {getRowPageNumbers({
           totalPages: total,
-          numberOfPages: 6,
           currentPage: current,
         }).map((p) => (
           <Link

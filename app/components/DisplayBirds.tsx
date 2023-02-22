@@ -32,7 +32,7 @@ export const DisplayBirds = ({
           <Link
             to={`/lists/birds/${id}/add?englishName=${englishName}&taxonomy=${taxonomy}`}
           >
-            Add new
+            ADD
           </Link>
         </p>
         {isAuthorized === true ? (

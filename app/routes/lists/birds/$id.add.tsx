@@ -37,8 +37,8 @@ export default function AddToBirdToList() {
   if (lists.length <= 0) {
     return (
       <section>
-        Oops, You have don't have any list.{" "}
-        <Link to="/lists/new/">Create new List</Link>
+        You have don't have any list yet. Do you want to create one ?{" "}
+        <Link to="/lists/new/">Yes</Link>
       </section>
     );
   }

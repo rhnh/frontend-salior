@@ -14,25 +14,26 @@ interface LoaderData {
   featuredPosts: PaginatedPosts;
 }
 export const loader: LoaderFunction = async ({ request }) => {
-  const [randomBird] = await getRandomTaxonomy();
+  const randomBird = await getRandomTaxonomy();
   const featuredPosts = await getPosts({
     pageNumber: 1,
     limit: 3,
     isFeatured: true,
   });
   invariant(featuredPosts, "Invalid post");
-
-  return json<LoaderData>({
+  console.log(randomBird, "here birdie bird");
+  invariant(randomBird);
+  const post = json<LoaderData>({
     featuredPosts: featuredPosts[0] as unknown as PaginatedPosts,
-    bird: randomBird,
+    bird: randomBird[0],
   });
+  return post;
 };
 
 export default function HomeRouter() {
   const { featuredPosts, bird } = useLoaderData<LoaderData>();
   return (
     <article>
-      <section>{bird.englishName}</section>
       <section>
         {featuredPosts.posts.length > 0 ? (
           <section>
@@ -45,6 +46,11 @@ export default function HomeRouter() {
             ))}
           </section>
         ) : null}
+        <section>
+          <img src={bird?.image || ""} alt="" />
+          {bird?.englishName}
+          {bird?.info}
+        </section>
       </section>
     </article>
   );

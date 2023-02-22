@@ -15,11 +15,8 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { SITE_TITLE } from "utils/config.server";
 import NavBar from "./components/NavBar";
 import stylesUrl from "~/styles/app.css";
-import { getLocalAuthenticatedUserId } from "utils/session.server";
-import { getUserById } from "./models/user.server";
 import type { ReactNode } from "react";
 import { getLocalAuthenticatedUser } from "utils/user.server";
 import Footer from "./components/footer";
@@ -55,6 +52,7 @@ function Document({ children, title }: { children: ReactNode; title: string }) {
       <head>
         <Meta />
         <Links />
+        <title>{title}</title>
       </head>
       <body style={{ margin: 0, padding: 0 }}>
         <main

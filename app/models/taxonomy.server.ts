@@ -98,11 +98,15 @@ export const getRandomTaxonomy = async () => {
   const count = await prisma.taxonomy.count();
   const random = Math.floor(Math.random() * count);
   return prisma.taxonomy.findMany({
+    take: 1,
+    skip: random,
     where: {
       rank: 'species',
       isApproved: true,
-      englishName: "White-bellied sea eagle"
+      // image: { not: "" },
+      englishName: { not: undefined, }
+      ,
+      AND: [{ info: { not: undefined } }, { info: { not: "" } }]
     },
-
   })
 }
