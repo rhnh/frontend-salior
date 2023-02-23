@@ -17,12 +17,18 @@ import {
 } from "@remix-run/react";
 import NavBar from "./components/NavBar";
 import stylesUrl from "~/styles/app.css";
+import globalStyle from "~/styles/global.css";
+import navStyle from "~/styles/nav.css";
 import type { ReactNode } from "react";
 import { getLocalAuthenticatedUser } from "utils/user.server";
 import Footer from "./components/footer";
 
 export const links: LinksFunction = () => {
-  return [{ rel: "stylesheet", href: stylesUrl }];
+  return [
+    { rel: "stylesheet", href: globalStyle },
+    { rel: "stylesheet", href: stylesUrl },
+    { rel: "stylesheet", href: navStyle },
+  ];
 };
 
 export const meta: MetaFunction = () => ({
@@ -54,16 +60,8 @@ function Document({ children, title }: { children: ReactNode; title: string }) {
         <Links />
         <title>{title}</title>
       </head>
-      <body style={{ margin: 0, padding: 0 }}>
-        <main
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "100vh",
-            margin: 0,
-          }}
-        >
+      <body>
+        <main>
           <article>
             <header>
               <NavBar isLogged={isLogged} username={username} />
