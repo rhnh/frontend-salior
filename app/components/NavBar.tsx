@@ -1,14 +1,18 @@
-import { NavLink } from "@remix-run/react";
-
+import { useLocation } from "@remix-run/react";
 import type { FC } from "react";
 const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
   isLogged,
   username,
 }) => {
+  const pathname = useLocation().pathname;
+  const isActive = (pathname: string, origin: string) =>
+    pathname === origin ? "nav-active" : "";
+  // !don't replace a with NavLink, because in mobile the pages needs to be refreshed,
+  // !  so that menu closes
   return (
-    <nav className="nav">
+    <nav>
       <section className="nav-logo">
-        <NavLink to="/">SafariLive.org</NavLink>
+        <a href="/">SafariLive.org</a>
       </section>
       <section className="nav-buttons">
         <input
@@ -27,33 +31,64 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
         <section className="nav-menu-buttons">
           <ul className="nav-ul">
             <li>
-              <NavLink to="/posts">Articles</NavLink>
+              <a className={isActive(pathname, "/posts")} href="/posts">
+                Articles
+              </a>
             </li>
             <li>
-              <NavLink to="/birds">Birds</NavLink>
+              <a
+                className={isActive(pathname, "/taxonomy/birds")}
+                href="/birds"
+              >
+                Birds
+              </a>
             </li>
             <li>
-              <NavLink to="/lists">Lists</NavLink>
+              <a className={isActive(pathname, "/lists")} href="/lists">
+                Lists
+              </a>
             </li>
             <li>
-              <NavLink to="/about">About</NavLink>
+              <a className={isActive(pathname, "/about")} href="/about">
+                About
+              </a>
             </li>
             {!isLogged ? (
               <>
                 <li>
-                  <NavLink to="/users/login">Login</NavLink>
+                  <a
+                    className={isActive(pathname, "/users/login")}
+                    href="/users/login"
+                  >
+                    Login
+                  </a>
                 </li>
                 <li>
-                  <NavLink to="/users/register">Register</NavLink>
+                  <a
+                    className={isActive(pathname, "/users/register")}
+                    href="/users/register"
+                  >
+                    Register
+                  </a>
                 </li>
               </>
             ) : (
               <>
                 <li>
-                  <NavLink to="/users/profile">{username}</NavLink>
+                  <a
+                    className={isActive(pathname, "/users/profile")}
+                    href="/users/profile"
+                  >
+                    {username}
+                  </a>
                 </li>
                 <li>
-                  <NavLink to="/users/logout">Logout</NavLink>
+                  <a
+                    className={isActive(pathname, "/users/logout")}
+                    href="/users/logout"
+                  >
+                    Logout
+                  </a>
                 </li>
               </>
             )}
