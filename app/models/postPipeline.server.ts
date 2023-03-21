@@ -8,6 +8,10 @@ export const postPipeline = ({ pageNumber = 1, limit = 4, isFeatured = false }:
         'isFeatured': isFeatured === false ? { $in: [null, false, true] } : isFeatured
       }
     }, {
+      '$sort': {
+        'createdAt': -1
+      }
+    }, {
       '$project': {
         'isFeatured': 0
       }

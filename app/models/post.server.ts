@@ -22,11 +22,20 @@ export const setFeaturedPost = async (
 }
 
 
-export const getPosts = async ({ pageNumber = 1, limit = 5, isFeatured = false }:
+export const getPaginatedPosts = async ({ pageNumber = 1, limit = 5, isFeatured = false }:
   { pageNumber: number, limit: number, isFeatured?: boolean }) => {
   const pipeline = postPipeline({ pageNumber, limit, isFeatured })
   return prisma.post.aggregateRaw({ pipeline })
 }
+
+export const getRecentPosts = async ({ total = 3 }: { total?: number }) => {
+  return prisma.post.findMany({ take: total, orderBy: { createdAt: "desc" } })
+}
+
+export const getFeaturedPost = async () => {
+  return prisma.post.findMany({ take: 10, where: { isFeatured: true }, orderBy: [{ createdAt: "desc" }] })
+}
+
 
 
 export const getPostById = async (id: string) => {
@@ -37,19 +46,20 @@ export const deletePostById = async (id: string) => {
   return prisma.post.delete({ where: { id } })
 }
 
-export const createPost = async ({ title, body, username }:
-  { title: string, body: string, username: string }) => {
+export const createPost = async ({ title, body, username, image }:
+  { title: string, body: string, username: string, image: string }) => {
   return prisma.post.create({
     data: {
       title,
       body,
       username,
+      imageUrl: image,
       isFeatured: false
     }
   });
 }
 
-export const updatePostById = async ({ id, title, body, username }:
-  { id: string, title: string, body: string, username: string }) => {
-  return prisma.post.update({ where: { id }, data: { title, body, } })
+export const updatePostById = async ({ id, title, body, username, imageUrl }:
+  { id: string, title: string, body: string, username: string, imageUrl: string }) => {
+  return prisma.post.update({ where: { id }, data: { title, body, imageUrl } })
 }

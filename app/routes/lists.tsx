@@ -1,17 +1,15 @@
-import { Link, Outlet } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react"
 
 const Lists = () => {
   return (
-    <article>
-      <section>
-        <h1>Lists</h1>
-      </section>
-      <section>
-        <Link to="new">Create New List</Link>
-      </section>
+    <section className="layout">
+      <h1>Lists</h1>
       <Outlet />
-    </article>
-  );
-};
+      <Link className="button button--secondary button--small" to="new">
+        Create New List
+      </Link>
+    </section>
+  )
+}
 
-export default Lists;
+export default Lists

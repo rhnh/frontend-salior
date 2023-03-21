@@ -149,3 +149,4 @@ prisma/data/*
 keyfile
 
 .git
+google-api.sh

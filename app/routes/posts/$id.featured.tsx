@@ -1,17 +1,24 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type { ActionFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { getPostById, setFeaturedPost } from "~/models/post.server";
 import { redirect, json } from "@remix-run/node";
 import type { Post } from "@prisma/client";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { getLocalAuthenticatedUser } from "~/utils/user.server";
-import { getLocalAuthenticatedUserId } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ params, request }) => {
   const id = params.id;
+  const body = await request.formData();
+
   invariant(id, "Invalid id");
   const post: Post = (await getPostById(id)) as Post;
   invariant(post, "Post not found");
+
+  const featured = body.get("isFeatured");
+  invariant(featured, "Invalid value");
+
+  const isFeatured = Number(featured) === 1 ?? true;
+
   const user = await getLocalAuthenticatedUser(request);
   if (!user) {
     return redirect("/users/login");
@@ -21,7 +28,7 @@ export const action: ActionFunction = async ({ params, request }) => {
     user.role === "contributor" ||
     user.role === "mod"
   ) {
-    setFeaturedPost({ isFeatured: true, id });
+    setFeaturedPost({ isFeatured, id });
     return redirect("/posts");
   }
   return null;
@@ -52,13 +59,27 @@ export default function FeaturedPostById() {
   const { title, body, isFeatured } = post;
   return (
     <article>
-      <form method="post">
+      <Form method="post">
         <h3>Set Featured</h3>
         {title}
         <p>{body}</p>
         {isFeatured === true ?? <p>This post is featured</p>}
+        <p>
+          <label htmlFor="isFeatured">Set Feature</label>
+          <input
+            type="radio"
+            name="isFeatured"
+            id="isFeatured"
+            value="1"
+            defaultChecked
+          />
+        </p>
+        <p>
+          <label htmlFor="isFeatured">Remove Feature</label>
+          <input type="radio" name="isFeatured" id="isFeatured" value="0" />
+        </p>
         <button type="submit">Save</button>
-      </form>
+      </Form>
     </article>
   );
 }

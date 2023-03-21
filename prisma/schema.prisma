@@ -66,7 +66,7 @@ model Taxonomy {
   isApproved  Boolean
   username    String?
   slug        String?
-  image       String?
+  imageUrl    String?
   info        String?
   sex         Gender?
   ancestors   String[]
@@ -74,9 +74,12 @@ model Taxonomy {
 }
 
 model Post {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  imageUrl   String?
   isFeatured Boolean?
   title      String
   body       String
   username   String
+  createdAt  DateTime? @default(now())
+  updatedAt  DateTime? @updatedAt
 }

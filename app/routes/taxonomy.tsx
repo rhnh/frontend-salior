@@ -1,13 +1,14 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet } from "react-router-dom";
 
 export default function Taxonomy() {
-
   return (
-    <article>
-      <section>
-        <Link to="/birds">Birds</Link>
-      </section>
+    <article className="birds">
+      <h3>
+        <Link className="link" to="/birds">
+          Birds
+        </Link>
+      </h3>
       <Outlet />
     </article>
-  )
+  );
 }

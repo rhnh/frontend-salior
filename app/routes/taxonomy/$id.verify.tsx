@@ -1,55 +1,55 @@
-import { json, redirect } from "@remix-run/node";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import { getTaxonomyById, setApproved } from "~/models/taxonomy.server";
-import { Link, useLoaderData } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node"
+import type { ActionFunction, LoaderFunction } from "@remix-run/node"
+import invariant from "tiny-invariant"
+import { getTaxonomyById, setApproved } from "~/models/taxonomy.server"
+import { Link, useLoaderData } from "@remix-run/react"
 import {
   getLocalAuthenticatedUser,
   isAuthorizedUser,
-} from "~/utils/user.server";
-import { destroySession, getSession } from "~/utils/session.server";
-import type { Taxonomy } from "@prisma/client";
+} from "~/utils/user.server"
+import { destroySession, getSession } from "~/utils/session.server"
+import type { Taxonomy } from "@prisma/client"
 
 export const loader: LoaderFunction = async ({ params, request }) => {
-  const isAuthenticatedUser = await getLocalAuthenticatedUser(request);
+  const isAuthenticatedUser = await getLocalAuthenticatedUser(request)
   if (!isAuthenticatedUser) {
-    return redirect("/users/login");
+    return redirect("/users/login")
   }
 
   if (isAuthorizedUser(isAuthenticatedUser.role) === false) {
-    const session = await getSession(request.headers.get("Cookie"));
+    const session = await getSession(request.headers.get("Cookie"))
     if (typeof session === "object") {
       return redirect("/users/login", {
         headers: {
           "Set-Cookie": await destroySession(session),
         },
-      });
+      })
     }
   }
-  const id = params?.id;
-  invariant(id, "Invalid id");
-  const taxonomy = await getTaxonomyById(id);
+  const id = params?.id
+  invariant(id, "Invalid id")
+  const taxonomy = await getTaxonomyById(id)
 
   if (!taxonomy) {
-    throw new Response("Invalid taxonomy", { status: 404 });
+    throw new Response("Invalid taxonomy", { status: 404 })
   }
-  return json<Taxonomy>(taxonomy);
-};
+  return json<Taxonomy>(taxonomy)
+}
 
 export const action: ActionFunction = async ({ params }) => {
-  const id = params?.id;
-  invariant(id, "Invalid id");
-  const taxonomy = await getTaxonomyById(id);
+  const id = params?.id
+  invariant(id, "Invalid id")
+  const taxonomy = await getTaxonomyById(id)
   if (!taxonomy) {
-    throw new Response("Invalid taxonomy", { status: 404 });
+    throw new Response("Invalid taxonomy", { status: 404 })
   }
-  const taxonomyId = taxonomy.id;
-  await setApproved({ id: taxonomyId, isApproved: true });
-  return redirect("/taxonomy/verify");
-};
+  const taxonomyId = taxonomy.id
+  await setApproved({ id: taxonomyId, isApproved: true })
+  return redirect("/taxonomy/verify")
+}
 
 export default function ApprovedBird() {
-  const taxonomy = useLoaderData<Taxonomy>();
+  const taxonomy = useLoaderData<Taxonomy>()
 
   return (
     <article>
@@ -66,12 +66,20 @@ export default function ApprovedBird() {
             <dd key={i}>{ancestor}</dd>
           ))}
         </dl>
-        <img src={`${taxonomy.image}`} alt={`${taxonomy.taxonomy}`} />
+        <img src={`${taxonomy.imageUrl}`} alt={`${taxonomy.taxonomy}`} />
         <p>
-          <button>Submit</button>
-          <Link to={`/taxonomy/${taxonomy.id}/edit`}>Edit</Link>
+          <button type="submit" className="button button--success">
+            Submit
+          </button>
+          <Link
+            className="button button--small"
+            to={`/taxonomy/${taxonomy.id}/edit`}
+          >
+            <i className="icon-edit"></i>
+            Edit
+          </Link>
         </p>
       </form>
     </article>
-  );
+  )
 }

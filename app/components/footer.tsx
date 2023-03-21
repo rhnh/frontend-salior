@@ -1,27 +1,49 @@
-import React from "react";
+import { Link } from "react-router-dom"
 
 export default function Footer() {
   return (
-    <footer style={{ display: "flex", gap: "3em" }}>
-      <section>
-        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Hic minima
-        impedit libero natus incidunt nisi repudiandae molestiae amet assumenda.
-        Iure molestias, nisi recusandae cupiditate itaque qui delectus quas
-        voluptatem minima?
-      </section>
-      <section>
+    <footer
+      className="footer"
+      role="contentinfo"
+      aria-label="footer Information"
+    >
+      <section className="footer-section">
+        <h3>Information</h3>
         <ul>
-          <li>a</li>
-          <li>b</li>
-          <li>c</li>
+          <li>
+            <Link to="/about"> About Safarilive.org</Link>
+          </li>
+          <li>
+            <Link to="https://github.com/rhnh/salior-remix">
+              MIT {new Date().getFullYear()} &#169; Safarilive.org
+            </Link>
+          </li>
+          <li>
+            <a href="https://twitter.com/safariliveorg">
+              <i className="icon-twitter"> Twitter</i>
+            </a>
+          </li>
         </ul>
       </section>
-      <section>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum odio
-        debitis neque accusamus libero. Eum illo provident, sapiente adipisci
-        minima nobis iste tempora, mollitia fuga ipsum rerum quo commodi
-        molestiae.
+
+      <section className="footer-section">
+        <h3>Source code</h3>
+        <ul>
+          <li>
+            <a href="https://github.com/rhnh/salior-remix">
+              <i className="icon-github"> code</i>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/rhnh/salior-remix/issues">
+              <i className="icon-github"> issues</i>
+            </a>
+          </li>
+          <li>
+            <Link to="/about">Credits</Link>
+          </li>
+        </ul>
       </section>
     </footer>
-  );
+  )
 }

@@ -1,57 +1,65 @@
-import type { LoaderFunction } from "@remix-run/node";
-import invariant from "tiny-invariant";
-import { getPosts } from "~/models/post.server";
-import { json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node"
+import invariant from "tiny-invariant"
+import { getFeaturedPost } from "~/models/post.server"
+import { json } from "@remix-run/node"
+import { Link, useLoaderData } from "@remix-run/react"
 
-import { getRandomTaxonomy } from "~/models/taxonomy.server";
-import type { Taxonomy } from "@prisma/client";
-import type { PaginatedPosts } from "utils/types.server";
-import { Fragment } from "react";
+import Posts from "~/components/Posts"
+import type { Post } from "@prisma/client"
 
-interface LoaderData {
-  bird: Taxonomy;
-  featuredPosts: PaginatedPosts;
+export const loader: LoaderFunction = async () => {
+  const posts = (await getFeaturedPost()) as unknown as Post[]
+  invariant(posts, "No post found")
+  return json<Post[]>(posts)
 }
-export const loader: LoaderFunction = async ({ request }) => {
-  const randomBird = await getRandomTaxonomy();
-  const featuredPosts = await getPosts({
-    pageNumber: 1,
-    limit: 3,
-    isFeatured: true,
-  });
-  invariant(featuredPosts, "Invalid post");
-  console.log(randomBird, "here birdie bird");
-  invariant(randomBird);
-  const post = json<LoaderData>({
-    featuredPosts: featuredPosts[0] as unknown as PaginatedPosts,
-    bird: randomBird[0],
-  });
-  return post;
-};
 
 export default function HomeRouter() {
-  const { featuredPosts, bird } = useLoaderData<LoaderData>();
+  const data = useLoaderData<Post[]>()
+  const posts: Post[] = (data as unknown as Post[]) || ([] as Post[])
+
   return (
-    <article>
-      <section>
-        {featuredPosts.posts.length > 0 ? (
-          <section>
-            <h2>Featured Post</h2>
-            {featuredPosts.posts.map((post) => (
-              <Fragment key={post._id.$oid}>
-                <p>{post.title}</p>
-                <p>{post.body}</p>
-              </Fragment>
-            ))}
-          </section>
-        ) : null}
-        <section>
-          <img src={bird?.image || ""} alt="" />
-          {bird?.englishName}
-          {bird?.info}
+    <>
+      <article className="hero">
+        <a href="/users/register">Join Now</a>
+        <h3>At Home In Wilderness</h3>
+      </article>
+      <article className="container">
+        <section className="articles">
+          <h2>Recent featured Articles</h2>
+          <Posts posts={posts} />
         </section>
-      </section>
-    </article>
-  );
+        <aside className="aside">
+          <a
+            className="button--success"
+            target="_blank"
+            href="https://www.youtube.com/watch?v=_r4FjjGOUs4"
+            data-type="URL"
+            data-id="https://equalizedigital.com"
+            rel="noreferrer"
+            aria-describedby="new-window-0"
+          >
+            WildEarth
+          </a>
+          <a
+            className="button--success"
+            target="_blank"
+            href="https://www.youtube.com/@PaintedDogTV"
+            rel="noreferrer"
+            aria-describedby="new-window-0"
+          >
+            PaintedDogTV
+          </a>
+          <Link to="/about" className="button">
+            About
+          </Link>
+          <Link to="/lists/new" className="button">
+            Create Your bird List
+          </Link>
+          <Link to="/users/register" className="button button--primary">
+            Join Now!
+          </Link>
+        </aside>
+      </article>
+    </>
+  )
 }

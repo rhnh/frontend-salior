@@ -23,25 +23,60 @@ export const Pagination = ({
     return null;
   }
   return (
-    <article>
-      <section style={{ display: "flex", justifyContent: "space-between" }}>
-        <Link to={`${rootPath}?page=1`}>First</Link>
-        {<Link to={`${rootPath}?page=${previous(currentPage)}`}>previous</Link>}
+    <article className="pagination">
+      <section role="navigation" className="pagination-nav">
+        <Link
+          aria-roledescription="navigates to the first page"
+          aria-label="first"
+          className="pagination-links"
+          to={`${rootPath}?page=1`}
+        >
+          <i className="icon-first" aria-label="Page 1" />
+        </Link>
+
+        <Link
+          className="pagination-links"
+          aria-label="previous"
+          to={`${rootPath}?page=${previous(currentPage)}`}
+        >
+          <i className="icon-back flipH"></i>
+        </Link>
+      </section>
+      <section className="pagination-nav pagination-numbers">
         {getRowPageNumbers({
           totalPages: total,
           currentPage: current,
+          numberOfPages: 4,
         }).map((p) => (
           <Link
             key={p}
+            aria-label={`page ${p + 1}`}
             to={`${rootPath}?page=${p + 1}`}
-            style={{ color: current === p + 1 ? "red" : "blue" }}
+            className={`pagination-links ${
+              current === p + 1 ? "pagination-links--active" : ""
+            }`}
           >
             {p + 1}
           </Link>
         ))}
-
-        {<Link to={`${rootPath}?page=${next(currentPage, total)}`}>Next</Link>}
-        <Link to={`${rootPath}?page=${pages.length}`}>Last</Link>
+      </section>
+      <section className="pagination-nav">
+        {
+          <Link
+            className="pagination-links"
+            aria-label="next"
+            to={`${rootPath}?page=${next(currentPage, total)}`}
+          >
+            <i className="icon-forward"></i>
+          </Link>
+        }
+        <Link
+          aria-label="last"
+          className="pagination-links"
+          to={`${rootPath}?page=${pages.length}`}
+        >
+          <i className="icon-fast-forward" />
+        </Link>
       </section>
     </article>
   );
