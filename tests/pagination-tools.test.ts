@@ -15,7 +15,6 @@ describe('getNextPages', () => {
       totalPages: 16,
       currentPage: 5,
     })
-    console.log(result)
     expect(result).toStrictEqual([2, 3, 4, 5, 6,])
   })
   test('another one', () => {
