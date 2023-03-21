@@ -1,45 +1,46 @@
-import { json, redirect } from "@remix-run/node";
-import type { LoaderFunction } from "@remix-run/node";
-import { getLists } from "~/models/list.server";
-import { Link, useLoaderData } from "@remix-run/react";
-import type { List } from "@prisma/client";
-import { getLocalAuthenticatedUserId } from "~/utils/session.server";
-import { getUserById } from "~/models/user.server";
+import { json, redirect } from "@remix-run/node"
+import type { LoaderFunction } from "@remix-run/node"
+import { getLists } from "~/models/list.server"
+import { Link, useLoaderData } from "@remix-run/react"
+import type { List } from "@prisma/client"
+import { getLocalAuthenticatedUserId } from "~/utils/session.server"
+import { getUserById } from "~/models/user.server"
 
 type LoaderData = {
-  lists: Pick<List, "id" | "listname" | "username">[];
-};
+  lists: Pick<List, "id" | "listname" | "username">[]
+}
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getLocalAuthenticatedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request)
   if (!userId) {
-    return redirect("/users/login");
+    return redirect("/users/login")
   }
-  const user = await getUserById(userId);
-  const username = user?.username;
+  const user = await getUserById(userId)
+  const username = user?.username
   if (!username) {
-    return redirect("/users/login");
+    return redirect("/users/login")
   }
-  const lists = await getLists(username);
+  const lists = await getLists(username)
   if (lists?.length <= 0) {
-    return json([]);
+    return json([])
   }
-  return json({ lists });
-};
+  return json({ lists })
+}
 function ListsIndex() {
-  const { lists } = useLoaderData<LoaderData>();
+  const { lists } = useLoaderData<LoaderData>()
   if (lists?.length <= 0) {
-    return <p>No list found </p>;
+    return <p>No list found </p>
   }
   return (
-    <ul>
+    <ol className="list">
+      {!lists ? <p>You don't have any list yet!</p> : null}
       {lists?.map((list) => (
         <li key={list.id}>
           <Link to={list.id}>{list.listname}</Link>
         </li>
       ))}
-    </ul>
-  );
+    </ol>
+  )
 }
 
-export default ListsIndex;
+export default ListsIndex

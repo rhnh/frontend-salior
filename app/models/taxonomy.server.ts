@@ -110,3 +110,8 @@ export const getRandomTaxonomy = async () => {
     },
   })
 }
+
+export const updateTaxonomy = async (t: Taxonomy) => {
+  const { id, ...rest } = t;
+  return prisma.taxonomy.update({ where: { id }, data: { ...rest } })
+}

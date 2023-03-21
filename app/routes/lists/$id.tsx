@@ -1,104 +1,95 @@
-import type { Taxonomy } from "@prisma/client";
-
-import { Link, Outlet, useLoaderData, useParams } from "@remix-run/react";
-import { json, redirect } from "@remix-run/node";
-import { getListBirdById } from "~/models/list.server";
-import invariant from "tiny-invariant";
-import type { LoaderFunction } from "@remix-run/node";
-import { getLocalAuthenticatedUserId } from "~/utils/session.server";
-import { getUserById } from "~/models/user.server";
-
-type Birds =
-  | Pick<Taxonomy, "createdAt" | "updatedAt" | "englishName" | "taxonomy"> & {
-      _id: string;
-    };
-type UserList = {
-  _id: string;
-  username: string;
-  listname: string;
-  birds: Birds[];
-};
-type LoaderData = {
-  list: UserList;
-  id: string; //list id
-};
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react"
+import { json, redirect } from "@remix-run/node"
+import { getListBirdById } from "~/models/list.server"
+import invariant from "tiny-invariant"
+import type { LoaderFunction } from "@remix-run/node"
+import { getLocalAuthenticatedUserId } from "~/utils/session.server"
+import { getUserById } from "~/models/user.server"
+import { fixTheId } from "tests/utils"
+import type { ListWithId, TaxonomyList } from "~/utils/types.server"
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  const userId = await getLocalAuthenticatedUserId(request);
+  const userId = await getLocalAuthenticatedUserId(request)
   if (!userId) {
-    return redirect("/users/login");
+    return redirect("/users/login")
   }
-  const user = await getUserById(userId);
+  const user = await getUserById(userId)
   if (!user?.username) {
-    return redirect("/users/login");
+    return redirect("/users/login")
   }
-  const id = params?.id;
-  invariant(id, "Invalid list id");
-  const list = await getListBirdById(id, user?.username);
+  const id = params?.id
+  invariant(id, "Invalid list id")
+  const rawList = await getListBirdById(id, user?.username)
+  const data = rawList[0] as unknown as ListWithId
+  const listWithId = fixTheId(data) as unknown as ListWithId
+  const list = {
+    ...listWithId,
+    birds: listWithId.birds.map((bird) => fixTheId(bird)),
+  } as unknown as TaxonomyList
+  return json<TaxonomyList>(list)
+}
 
-  return json({ list: list[0], id });
-};
-
-export default function List() {
-  const { list, id } = useLoaderData<LoaderData>();
-
+export default function ShowList() {
+  const { birds, id, listname } = useLoaderData<TaxonomyList>()
   if (!id) {
-    return <p>Invalid list Id: {list?._id}</p>;
+    return <p>Invalid list Id: {id}</p>
   }
 
   return (
     <article>
-      <section>{list.listname}</section>
-      <Link
-        to={`/lists/${Object.values(list._id).toString()}/remove?listname=${
-          list.listname
-        }`}
-      >
-        delete entire list
+      <Link to="/lists">
+        <i className="icon-first">...back</i>
       </Link>
-      <form method="post">
-        <ul>
-          {list.birds.map((bird) => (
-            <li key={bird._id}>
+      <h3>{listname}</h3>
+
+      <Form method="post">
+        <ul className="list">
+          {birds.map((bird, i) => (
+            <li key={i}>
+              <Link to={`/taxonomy/${bird.id}`}>
+                <p>
+                  {bird.englishName} {bird.taxonomy}
+                </p>
+              </Link>
               <p>
-                {bird.englishName} {bird.taxonomy}
-              </p>
-              <p>
-                {/**
-                 * @info
-                 * ! using Object.values(), because of Prisma aggregateRaw
-                 * returns _id as an Object, instead of id.
-                 * @todo need to search for alternative solution
-                 */}
                 <Link
-                  to={`/lists/birds/${Object.values(
-                    bird._id
-                  ).toString()}/remove?englishName=${
-                    bird.englishName
-                  }&listname=${list.listname}&listId=${id}`}
+                  to={`/lists/birds/${bird.id}/remove?englishName=${bird.englishName}&listname=${listname}&listId=${id}`}
                 >
-                  x
+                  <i className="icon-trash" />
                 </Link>
               </p>
             </li>
           ))}
         </ul>
-      </form>
+      </Form>
       <section>
-        <Link to={`/lists/birds/${id}/new`}>Add new</Link>
+        <h4>Settings</h4>
+        <Link
+          className="button button--success button--small"
+          to={`/lists/birds/${id}/new`}
+        >
+          Add new
+        </Link>
+        <Link
+          className="button button--danger button--small"
+          to={`/lists/${id}/remove?listname=${listname}`}
+        >
+          <i className="icon-alert-triangle"></i> {` `}
+          Delete entire list
+        </Link>
       </section>
       <Outlet />
     </article>
-  );
+  )
 }
 
-export function ErrorBoundary() {
-  const { id } = useParams();
-  return (
-    <section className="error-container">
-      <p>
-        No list with the <em>{id}</em> id found!
-      </p>
-    </section>
-  );
-}
+// export function ErrorBoundary() {
+//   const { id } = useParams()
+//   return (
+//     <section className="error-container">
+//       <p>
+//         No list with the <em>{id}</em> {` `} id found!
+//       </p>
+//     </section>
+//   )
+// }

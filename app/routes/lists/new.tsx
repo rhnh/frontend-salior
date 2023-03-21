@@ -29,8 +29,8 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
   const result = await createList({ username, listname });
-  console.log(result);
-  return redirect("/lists");
+  if (result) return redirect("/lists");
+  return json({ error: "couldn't create it!" });
 };
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getLocalAuthenticatedUserId(request);

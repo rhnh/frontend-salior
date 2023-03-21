@@ -3,6 +3,7 @@ import { getUserById } from "~/models/user.server";
 import { getLocalAuthenticatedUserId } from "./session.server";
 import { SALT } from "./config.server";
 import type { Role } from "@prisma/client";
+import rateLimit from 'express-rate-limit'
 
 export const authenticated = async ({
   password,

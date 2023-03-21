@@ -1,5 +1,6 @@
-import { ActionFunction, redirect } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { destroySession, getSession } from "~/utils/session.server";
+import type { ActionFunction } from "@remix-run/node";
 import {
   getLocalAuthenticatedUser,
   isAuthorizedUser,
