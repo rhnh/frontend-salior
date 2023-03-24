@@ -18,7 +18,7 @@ export const loader: ActionFunction = async ({ request, params }) => {
   invariant(id, "Invalid post id")
   const user = await getLocalAuthenticatedUser(request)
   const post = (await getPostById(id)) as unknown as Post
-  invariant(post, "No Post found")
+  invariant(post, "No Post found!")
   const recentPosts = (await getRecentPosts({
     total: 3,
   })) as unknown as Post[]

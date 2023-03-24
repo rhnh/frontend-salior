@@ -10,7 +10,8 @@ export const loader: ActionFunction = async ({ params }) => {
   const id = params.id
   invariant(id, "Invalid post id")
   const post = await getPostById(id)
-  invariant(post, "No Post found")
+  //todo need work
+  invariant(post, "No Post found!!")
   return json<Post>({ ...post })
 }
 

@@ -9,11 +9,12 @@ import { getLocalAuthenticatedUser, isAuthorizedUser } from "utils/user.server"
  */
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const authorizedUser = await getLocalAuthenticatedUser(request)
-  if (!authorizedUser) {
+  const user = await getLocalAuthenticatedUser(request)
+  if (!user) {
     return redirect("/users/login")
   }
-  const isAuthorized = isAuthorizedUser(authorizedUser?.role)
+  const isAuthorized = isAuthorizedUser(user?.role)
+
   return json({ isAuthorized })
 }
 

@@ -9,14 +9,22 @@ import type { Post } from "@prisma/client"
 
 export const loader: LoaderFunction = async () => {
   const posts = (await getFeaturedPost()) as unknown as Post[]
-  invariant(posts, "No post found")
+  if (posts) {
+    return json<Post[]>([])
+  }
   return json<Post[]>(posts)
 }
 
 export default function HomeRouter() {
   const data = useLoaderData<Post[]>()
   const posts: Post[] = (data as unknown as Post[]) || ([] as Post[])
-
+  if (posts.length <= 0) {
+    return (
+      <section className="layout">
+        <h3>No post found</h3>
+      </section>
+    )
+  }
   return (
     <>
       <article className="hero">
