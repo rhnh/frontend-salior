@@ -8,15 +8,14 @@ import { Pagination } from "~/components/Pagination"
 import { fixTheId } from "tests/utils"
 import type { TaxonomyAndId } from "utils/types.server"
 import AllBirds from "~/components/Birds"
-import type { Bird } from "@prisma/client"
+import type { Taxonomy } from "@prisma/client"
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
   const searchParam = url.searchParams
   const page = Number(searchParam.get("page")) || 1
-  const limit = Number(searchParam.get("limit")) || 5
+  const limit = Number(searchParam.get("limit")) || 10
   const rawData = await getTaxonomyPaginated(page, limit)
-
   const data = rawData[0] as unknown as PaginatedBirds
   const authorizedUser = await getLocalAuthenticatedUser(request)
   const isAuthorized = authorizedUser?.role !== "user"
@@ -25,6 +24,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     ...data,
     birds: data?.birds.map((bird: TaxonomyAndId) => fixTheId(bird)),
     isAuthorized,
+  }
+  if (!birds) {
+    return json([])
   }
   return json(birds)
 }
@@ -35,7 +37,7 @@ export default function Birds() {
   let { pathname } = useLocation()
 
   if (birds?.length <= 0 || birds === undefined) return <p>No Birds found</p>
-  const allBirds = birds as unknown as Bird[]
+  const allBirds = birds as unknown as Taxonomy[]
   return (
     <article>
       <section className="birds-info">

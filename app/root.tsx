@@ -81,8 +81,8 @@ function Document({ children, title }: { children: ReactNode; title: string }) {
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
-          <Footer />
         </main>
+        <Footer />
       </body>
     </html>
   )

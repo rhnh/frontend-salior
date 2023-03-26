@@ -33,7 +33,7 @@ export default function BirdById() {
   const data = useLoaderData<LoaderData>()
   const { isAuthorized, ...bird } = data
   return (
-    <article className="layout">
+    <article className="layout read">
       <DisplayBirdDetail
         englishName={bird.englishName}
         id={bird.id}
