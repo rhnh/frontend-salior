@@ -3,7 +3,6 @@ import { Link } from "react-router-dom"
 export const DisplayBird = ({
   taxonomy,
   englishName,
-  rank,
   id,
   imageUrl,
   isAuthorized,
@@ -37,10 +36,19 @@ export const DisplayBird = ({
           {isAuthorized === true ? (
             <>
               <p>
-                <Link to={`/`}>edit</Link>
+                <Link to={`/taxonomy/${id}/edit`}>
+                  <i className="icon-edit"></i>
+                </Link>
               </p>
               <p>
-                <Link to={`/`}>delete</Link>
+                <Link to={`/taxonomy/${id}/remove`}>
+                  <i className="icon-trash"></i>
+                </Link>
+              </p>
+              <p>
+                <Link to={`/taxonomy/${id}/verify`}>
+                  <i className="icon-check"></i>
+                </Link>
               </p>
             </>
           ) : null}

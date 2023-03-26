@@ -1,4 +1,4 @@
-import { json, redirect } from "@remix-run/node"
+import { json } from "@remix-run/node"
 import { Link, Outlet, useLoaderData } from "@remix-run/react"
 import type { LoaderFunction } from "@remix-run/node"
 import { getLocalAuthenticatedUser, isAuthorizedUser } from "utils/user.server"
@@ -11,10 +11,11 @@ import { getLocalAuthenticatedUser, isAuthorizedUser } from "utils/user.server"
 export const loader: LoaderFunction = async ({ request }) => {
   const authorizedUser = await getLocalAuthenticatedUser(request)
   if (!authorizedUser) {
-    return redirect("/users/login")
+    return json({ isAuthorized: false })
   }
   const isAuthorized = isAuthorizedUser(authorizedUser?.role)
-  return json({ isAuthorized })
+
+  if (isAuthorized) return json({ isAuthorized: true })
 }
 
 export default function Posts() {

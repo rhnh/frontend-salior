@@ -44,3 +44,4 @@ export async function getLocalAuthenticatedUser(
 
 export const isAuthorizedUser = (role: Role) =>
   role === "admin" || role === "mod";
+

@@ -2,14 +2,13 @@ import { json } from "@remix-run/node"
 import type { LoaderFunction } from "@remix-run/node"
 import { getTaxonomyPaginated } from "~/models/taxonomy.server"
 import { useLoaderData, useLocation } from "@remix-run/react"
-
-import { DisplayBird } from "~/components/DisplayBird"
-
 import type { PaginatedBirds } from "~/utils/types.server"
 import { getLocalAuthenticatedUser } from "~/utils/user.server"
 import { Pagination } from "~/components/Pagination"
 import { fixTheId } from "tests/utils"
 import type { TaxonomyAndId } from "utils/types.server"
+import AllBirds from "~/components/Birds"
+import type { Bird } from "@prisma/client"
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
@@ -36,8 +35,9 @@ export default function Birds() {
   let { pathname } = useLocation()
 
   if (birds?.length <= 0 || birds === undefined) return <p>No Birds found</p>
+  const allBirds = birds as unknown as Bird[]
   return (
-    <section>
+    <article>
       <section className="birds-info">
         <p className="accent">
           There are <em> {totalBirds} </em>birds on this site!
@@ -50,19 +50,8 @@ export default function Birds() {
         rootPath={pathname}
         current={page}
       />
-      <article className="cards">
-        {birds?.map((bird, i) => (
-          <DisplayBird
-            key={i}
-            englishName={bird.englishName}
-            taxonomy={bird.taxonomy}
-            rank={bird.rank}
-            id={bird.id}
-            imageUrl={bird.imageUrl}
-            isAuthorized={false}
-          />
-        ))}
-      </article>
-    </section>
+
+      <AllBirds birds={allBirds} />
+    </article>
   )
 }
