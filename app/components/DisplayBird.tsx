@@ -19,11 +19,15 @@ export const DisplayBird = ({
   return (
     <article className={`card ${clsName}`}>
       <Link className="bird-link" to={`/taxonomy/${id}`}>
-        <img
-          className="bird-link-img"
-          src={imageUrl ?? ""}
-          alt={englishName || ""}
-        />
+        <figure>
+          {imageUrl && imageUrl?.length > 0 && (
+            <img
+              className="bird-link-img"
+              src={imageUrl ?? ""}
+              alt={englishName || ""}
+            />
+          )}
+        </figure>
       </Link>
       <section className="card-details">
         <section className="bird-info-more">

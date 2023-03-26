@@ -363,6 +363,9 @@
 }
 
 .read {
-  display: block;
   text-align: left;
+  height: 100%;
+  clear: both;
+  overflow: scroll;
+
 }

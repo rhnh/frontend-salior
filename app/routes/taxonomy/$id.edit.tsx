@@ -19,6 +19,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const taxonomy = form.get("taxonomy")
   const imageUrl = form.get("image")
   const englishName = form.get("englishName")
+  const info = form.get("info")
+  invariant(info, "Invalid info")
   invariant(id, "invalid id")
   invariant(taxonomy, "No valid taxonomy")
   invariant(imageUrl, "Invalid image")
@@ -28,6 +30,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     taxonomy,
     englishName,
     imageUrl,
+    info,
   } as unknown as Taxonomy
   const result = await updateTaxonomy(t)
   if (result) {
@@ -37,7 +40,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export default function EditBird() {
-  const { taxonomy, englishName, imageUrl } = useLoaderData<Taxonomy>()
+  const { taxonomy, englishName, imageUrl, info } = useLoaderData<Taxonomy>()
   return (
     <section>
       <h3>Editing: </h3>
@@ -67,6 +70,16 @@ export default function EditBird() {
             name="image"
             id="image"
             defaultValue={imageUrl || ""}
+          />
+        </p>
+        <p>
+          <label htmlFor="info">Info</label>
+          <textarea
+            rows={20}
+            cols={40}
+            name="info"
+            id="info"
+            defaultValue={info || ""}
           />
         </p>
         <p>
