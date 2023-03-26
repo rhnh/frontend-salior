@@ -6,11 +6,9 @@ import {
 } from "~/utils/user.server"
 import { getTaxonomyById } from "~/models/taxonomy.server"
 import type { LoaderFunction } from "@remix-run/node"
-import type { Bird, Taxonomy } from "@prisma/client"
+import type { Taxonomy } from "@prisma/client"
 import { useLoaderData } from "@remix-run/react"
-
-import { Link } from "react-router-dom"
-import { DisplayBird } from "~/components/DisplayBird"
+import { DisplayBirdDetail } from "~/components/DisplayBirdDetail"
 
 interface LoaderData extends Partial<Taxonomy> {
   isAuthorized: boolean
@@ -36,12 +34,16 @@ export default function BirdById() {
   const { isAuthorized, ...bird } = data
   return (
     <article className="layout">
-      <DisplayBird
+      <DisplayBirdDetail
         englishName={bird.englishName}
         id={bird.id}
         rank={bird.rank}
         taxonomy={bird.taxonomy}
         isAuthorized={isAuthorized}
+        info={bird.info}
+        showDetail={true}
+        imageUrl={bird.imageUrl}
+        clsName="read"
       />
     </article>
   )

@@ -10,6 +10,7 @@
   --primary-dark-contrast: #bdd585;
   --secondary: #404040;
   --accent: #ab003f;
+  --accent-secondary: #eb5205;
   font-size: 18px;
 }
 
@@ -72,7 +73,7 @@ a {
 }
 
 a:hover {
-  color: var(--secondary)
+  color: var(--accent-secondary)
 }
 
 ul {

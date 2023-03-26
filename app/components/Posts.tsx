@@ -1,5 +1,5 @@
-import type { Post } from "@prisma/client";
-import DisplayPost from "./DisplayPost";
+import type { Post } from "@prisma/client"
+import DisplayPost from "./DisplayPost"
 
 export default function Posts({ posts }: { posts: Post[] }) {
   return (
@@ -8,5 +8,5 @@ export default function Posts({ posts }: { posts: Post[] }) {
         <DisplayPost key={post.id} post={post} isTrim={true} />
       ))}
     </article>
-  );
+  )
 }

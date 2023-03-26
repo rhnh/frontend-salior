@@ -361,3 +361,8 @@
 .about {
   font-size: 22px;
 }
+
+.read {
+  display: block;
+  text-align: left;
+}
