@@ -2,6 +2,7 @@
   display: none;
 }
 
+
 .hamburg::after {
   font-family: "icomoon";
   content: "\e917";
@@ -21,23 +22,7 @@
   display: none;
 }
 
-@media screen and (min-width:700px) {
-  .nav-ul {
-    display: flex;
-    gap: 1em;
-    list-style: none;
-  }
 
-  .logo {
-    width: 250px;
-    padding-top: .2em;
-  }
-
-  #checkbox+label {
-    display: none;
-
-  }
-}
 
 .logo {
   width: 190px;
@@ -61,7 +46,7 @@
   overflow-y: hidden;
 }
 
-header {
+.header {
   overflow: hidden;
   /* background-color: #c6d8ec; */
   /* background-color: #219ebc; */
@@ -74,7 +59,7 @@ header {
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
-nav {
+.nav {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-rows: 1.2em auto;
@@ -83,12 +68,30 @@ nav {
   overflow-y: hidden;
 }
 
-nav ul li a {
+.nav ul li a {
   display: block;
   text-decoration: none;
   color: var(--primary-dark)
 }
 
-nav ul li a:hover {
+.nav ul li a:hover {
   color: #aa0000
+}
+
+@media screen and (min-width:700px) {
+  .nav-ul {
+    display: flex;
+    gap: 1em;
+    list-style: none;
+  }
+
+  .logo {
+    width: 250px;
+    padding-top: .2em;
+  }
+
+  #checkbox+label {
+    display: none;
+
+  }
 }

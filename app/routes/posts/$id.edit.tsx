@@ -35,8 +35,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   invariant(id, "Invalid id")
 
   const post = await getPostById(id)
-  //todo need to work on this part
-  invariant(post, "No Post found!")
+  invariant(post, "No Post found")
   return json<Post>({ ...post })
 }
 export default function EditListById() {
