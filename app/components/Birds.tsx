@@ -1,18 +1,18 @@
-import type { Bird } from "@prisma/client";
-import { DisplayBird } from "./DisplayBird";
+import type { Bird, Taxonomy } from "@prisma/client"
+import { DisplayBird } from "./DisplayBird"
 
 export default function AllBirds({
   birds,
   isAuthorized = false,
 }: {
-  isAuthorized?: boolean;
-  birds: Bird[];
+  isAuthorized?: boolean
+  birds: Taxonomy[]
 }) {
   return (
     <article className="cards">
       {birds.map((bird) => (
-        <DisplayBird key={bird.birdId} isAuthorized={isAuthorized} {...bird} />
+        <DisplayBird key={bird.id} isAuthorized={isAuthorized} {...bird} />
       ))}
     </article>
-  );
+  )
 }

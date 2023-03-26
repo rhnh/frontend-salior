@@ -1,16 +1,17 @@
 import type { Taxonomy } from "@prisma/client"
 import { Link } from "react-router-dom"
-export const DisplayBird = ({
+export const DisplayBirdDetail = ({
   taxonomy,
   englishName,
   id,
   imageUrl,
   isAuthorized,
   info,
+  showDetail = false,
   clsName,
 }: Partial<Taxonomy> & {
   isAuthorized: boolean
-
+  showDetail?: boolean
   clsName?: string
 }) => {
   if (id === undefined) {
@@ -18,17 +19,18 @@ export const DisplayBird = ({
   }
   return (
     <article className={`card ${clsName}`}>
-      <Link className="bird-link" to={`/taxonomy/${id}`}>
-        <img
-          className="bird-link-img"
-          src={imageUrl ?? ""}
-          alt={englishName || ""}
-        />
-      </Link>
       <section className="card-details">
         <section className="bird-info-more">
           <h3>{englishName}</h3>
           <p className="accent">{taxonomy}</p>
+          {showDetail && (
+            <>
+              <figure>
+                <img src={imageUrl ?? ""} alt="" />
+              </figure>
+              <p>{info}</p>
+            </>
+          )}
         </section>
         <section className="bird-info--admin">
           <p>
