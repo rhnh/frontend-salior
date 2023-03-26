@@ -34,16 +34,13 @@ export const links: LinksFunction = () => {
   ]
 }
 
-// export const meta: MetaFunction = () => ({
-//   charset: "utf-8",
-//   title: "Safarilive.org",
-//   viewport: "width=device-width,initial-scale=1",
-// });
 export const meta: MetaFunction = () => {
   const description = `Safarilive.org, At home in wildness`
   return {
     charset: "utf-8",
     description,
+    title: "Safarilive",
+    viewport: "width=device-width, initial-scale=1.0",
     keywords: "Safarilive,Safari, live",
     "twitter:creator": "@safariliveorg",
     "twitter:site": "@safariliveorg",
@@ -76,7 +73,7 @@ function Document({ children, title }: { children: ReactNode; title: string }) {
         <title>{title}</title>
       </head>
       <body>
-        <header role="banner">
+        <header className="header">
           <NavBar isLogged={isLogged} username={username} />
         </header>
         <main role="main">
