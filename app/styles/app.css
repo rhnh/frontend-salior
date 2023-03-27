@@ -161,7 +161,7 @@
   box-shadow: inset 0 0 0 0 #dce1e3;
   /* color: #7c8c92; */
   padding: .65rem;
-  margin: .6em;
+
   transition: color .3s ease-in-out, box-shadow .3s ease-in-out;
   color: var(--primary-dark);
   text-decoration: none;
@@ -189,6 +189,10 @@
     border-left: 1px solid rgba(141, 141, 141, 0.377);
     margin-right: 0;
     border-top: unset;
+  }
+
+  .pagination a {
+    margin: .6em;
   }
 }
 
