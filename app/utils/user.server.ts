@@ -1,10 +1,9 @@
-import { redirect } from "@remix-run/node";
+
 import bcrypt from "bcryptjs";
 import { getUserById } from "~/models/user.server";
 import { getLocalAuthenticatedUserId } from "./session.server";
-import type { TypedResponse } from "@remix-run/node";
 import { SALT } from "./config.server";
-import type { Role, User } from "@prisma/client";
+import type { Role } from "@prisma/client";
 /**
  * @ Takes regular password and compares with hashedPassword {from data}
  * 

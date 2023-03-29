@@ -59,6 +59,18 @@ export async function getUserById(id: string) {
   });
 }
 
+export async function getUserByUsername(username: string) {
+  return prisma.user.findUnique({
+    where: { username },
+    select: {
+      username: true,
+      role: true,
+      createdAt: true,
+      id: true
+    }
+  })
+}
+
 export async function getPaginatedUsers({
   pageNumber,
   limit,
