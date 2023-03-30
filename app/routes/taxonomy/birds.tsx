@@ -45,6 +45,8 @@ export default function Birds() {
           There are <em> {totalBirds} </em>birds on this site!
         </p>
       </section>
+
+      <AllBirds birds={allBirds} />
       <Pagination
         total={totalPages}
         hasNextPage={hasNextPage}
@@ -52,8 +54,6 @@ export default function Birds() {
         rootPath={pathname}
         current={page}
       />
-
-      <AllBirds birds={allBirds} />
     </article>
   )
 }
