@@ -5,11 +5,6 @@ const About = () => {
       aria-label="about this page"
       role={"contentinfo"}
     >
-      <p>
-        Safarilive.org is an open-source project, dedicated for the viewers of
-        Safarilive of WildEarth.
-      </p>
-      <p>This page was made for WildEarth.tv back then.</p>
       <ul>
         <h3>Thanks to:</h3>
         <li>
@@ -33,7 +28,7 @@ const About = () => {
         <li>
           <a
             target="_blank"
-            href="https://www.youtube.com/watch?v=_r4FjjGOUs4"
+            href="https://www.youtube.com/@WildEarth"
             data-type="URL"
             data-id="https://equalizedigital.com"
             rel="noreferrer"
