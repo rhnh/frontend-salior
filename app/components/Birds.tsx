@@ -1,4 +1,4 @@
-import type { Bird, Taxonomy } from "@prisma/client"
+import type { Taxonomy } from "@prisma/client"
 import { DisplayBird } from "./DisplayBird"
 
 export default function AllBirds({
