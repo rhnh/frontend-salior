@@ -82,6 +82,61 @@ export const paginationPipeLine = (pageNumber = 1, limit = 5) => {
     },
   ];
 };
+export const unApprovedPipe2 =
+  [
+    {
+      '$match': {
+        '$or': [
+          {
+            'role': 'admin'
+          }, {
+            'role': 'mod'
+          }
+          , {
+            'role': 'contributor'
+          }
+        ]
+      }
+    }, {
+      '$lookup': {
+        'from': 'Taxonomy',
+        'let': {
+          'username': '$username'
+        },
+        'pipeline': [
+          {
+            '$match': {
+              '$expr': {
+                '$and': [
+                  {
+                    '$eq': [
+                      '$username', '$$username'
+                    ]
+                  }, {
+                    '$eq': [
+                      {
+                        '$getField': 'isApproved'
+                      }, false
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        'as': 'birds'
+      }
+    }, {
+      '$project': {
+        'birds': 1,
+        '_id': 0
+      }
+    }, {
+      '$unwind': {
+        'path': '$birds'
+      }
+    }
+  ]
 export const unApprovedPipe = [
   {
     $match: {
@@ -182,3 +237,21 @@ export const getByUserPipeLine = ({
       },
     },
   ];
+
+export const randomBirdPipe = [
+  {
+    '$match': {
+      'isApproved': true,
+      'rank': 'species',
+      'info': {
+        '$exists': true,
+        '$ne': null,
+
+      }
+    }
+  }, {
+    '$sample': {
+      'size': 1
+    }
+  }
+]

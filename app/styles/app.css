@@ -375,17 +375,3 @@
   overflow: scroll;
 
 }
-
-.search {
-  /*  */
-  background-color: red;
-  ;
-  width: 100%;
-}
-
-.search input {}
-
-
-.profile a {
-  display: block;
-}
