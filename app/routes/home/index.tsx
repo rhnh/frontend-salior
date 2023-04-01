@@ -20,7 +20,6 @@ export const loader: LoaderFunction = async () => {
   invariant(posts, "No post found")
   const data = (await getRandomTaxonomy()) as unknown as TaxonomyAndId[]
   invariant(data, "invalid data")
-  console.log(data[0])
   invariant(data, "No bird found")
   const bird = {
     ...data[0],
@@ -47,7 +46,6 @@ export default function HomeRouter() {
           <section className="cards">
             <section className="card card-deco">
               <h3>{bird.englishName}</h3>
-              <hr />
               <figure>
                 <Link to={`/taxonomy/${bird.id}`}>
                   <img src={`${bird.imageUrl}`} alt="" />
