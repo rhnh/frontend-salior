@@ -9,6 +9,7 @@ import { fixTheId } from "tests/utils"
 import type { TaxonomyAndId } from "utils/types.server"
 import AllBirds from "~/components/Birds"
 import type { Taxonomy } from "@prisma/client"
+import { useEffect } from "react"
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url)
@@ -18,8 +19,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   const rawData = await getTaxonomyPaginated(page, limit)
   const data = rawData[0] as unknown as PaginatedBirds
   const authorizedUser = await getLocalAuthenticatedUser(request)
-  const isAuthorized = authorizedUser?.role !== "user"
 
+  const isAuthorized = authorizedUser?.role !== "user"
   const birds = {
     ...data,
     birds: data?.birds.map((bird: TaxonomyAndId) => fixTheId(bird)),
@@ -32,10 +33,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 }
 
 export default function Birds() {
+  let { pathname } = useLocation()
   const { page, birds, totalBirds, hasNextPage, hasPreviousPage, totalPages } =
     useLoaderData<PaginatedBirds>()
-  let { pathname } = useLocation()
-
+  useEffect(() => {}, [])
   if (birds?.length <= 0 || birds === undefined) return <p>No Birds found</p>
   const allBirds = birds as unknown as Taxonomy[]
   return (

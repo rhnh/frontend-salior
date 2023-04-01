@@ -5,18 +5,34 @@ import { json } from "@remix-run/node"
 import { Link, useLoaderData } from "@remix-run/react"
 
 import Posts from "~/components/Posts"
-import type { Post } from "@prisma/client"
+import type { Post, Taxonomy } from "@prisma/client"
+import { getRandomTaxonomy } from "~/models/taxonomy.server"
+import React, { Fragment } from "react"
+import { fixTheId } from "tests/utils"
+import type { TaxonomyAndId } from "utils/types.server"
 
+interface Loader {
+  bird: Taxonomy
+  posts: Post[]
+}
 export const loader: LoaderFunction = async () => {
   const posts = (await getFeaturedPost()) as unknown as Post[]
   invariant(posts, "No post found")
-  return json<Post[]>(posts)
+  const data = (await getRandomTaxonomy()) as unknown as TaxonomyAndId[]
+  invariant(data, "invalid data")
+  console.log(data[0])
+  invariant(data, "No bird found")
+  const bird = {
+    ...data[0],
+    ...fixTheId({ _id: data[0]._id }),
+  } as unknown as Taxonomy
+  console.log(bird)
+  return json<Loader>({ posts, bird })
 }
 
 export default function HomeRouter() {
-  const data = useLoaderData<Post[]>()
+  const { posts: data, bird } = useLoaderData<Loader>()
   const posts: Post[] = (data as unknown as Post[]) || ([] as Post[])
-
   return (
     <>
       <article className="hero">
@@ -58,6 +74,16 @@ export default function HomeRouter() {
           <Link to="/users/register" className="button button--primary">
             Join Now!
           </Link>
+          <section className="cards">
+            <section className="card">
+              <h3>{bird.englishName}</h3>
+              <hr />
+
+              <p>{bird.englishName}</p>
+              <p>{bird.taxonomy}</p>
+              <Link to={`/taxonomy/${bird.id}`}>Learn more</Link>
+            </section>
+          </section>
         </aside>
       </article>
     </>

@@ -1,10 +1,7 @@
 import type { Taxonomy } from "@prisma/client";
 import { prisma } from "~/utils/prisma.server";
-import { paginationPipeLine } from "./taxonomyPipe.server";
-/**
- * @todo add user
- * @param taxonomy
- */
+import { paginationPipeLine, randomBirdPipe, unApprovedPipe2 } from "./taxonomyPipe.server";
+
 export async function createTaxonomy(
   taxonomy: Exclude<Taxonomy, "id" | "createdAt">
 ) {
@@ -13,11 +10,6 @@ export async function createTaxonomy(
   });
 }
 
-/**
- *
- * @param
- * @returns
- */
 export async function setApproved({
   id,
   isApproved,
@@ -35,80 +27,15 @@ export async function getTaxonomyPaginated(pageNumber = 1, limit = 5) {
 }
 
 export async function getUnApproved() {
+  const pipeline = unApprovedPipe2
   return prisma.user.aggregateRaw({
-    pipeline: [
-      {
-        '$match': {
-          '$or': [
-            {
-              'role': 'admin'
-            }, {
-              'role': 'mod'
-            }
-            , {
-              'role': 'contributor'
-            }
-          ]
-        }
-      }, {
-        '$lookup': {
-          'from': 'Taxonomy',
-          'let': {
-            'username': '$username'
-          },
-          'pipeline': [
-            {
-              '$match': {
-                '$expr': {
-                  '$and': [
-                    {
-                      '$eq': [
-                        '$username', '$$username'
-                      ]
-                    }, {
-                      '$eq': [
-                        {
-                          '$getField': 'isApproved'
-                        }, false
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
-          ],
-          'as': 'birds'
-        }
-      }, {
-        '$project': {
-          'birds': 1,
-          '_id': 0
-        }
-      }, {
-        '$unwind': {
-          'path': '$birds'
-        }
-      }
-    ]
+    pipeline
   });
 }
 
 
 export const getRandomTaxonomy = async () => {
-  const count = await prisma.taxonomy.count();
-  const random = Math.floor(Math.random() * count);
-  return prisma.taxonomy.findMany({
-    take: 1,
-    skip: random,
-    where: {
-      rank: 'species',
-      isApproved: true,
-      // image: { not: "" },
-      englishName: { not: undefined, }
-      ,
-      AND: [{ info: { not: undefined } }, { info: { not: "" } }]
-    },
-  })
+  return prisma.taxonomy.aggregateRaw({ pipeline: randomBirdPipe })
 }
 
 export const updateTaxonomy = async (t: Taxonomy) => {
