@@ -373,5 +373,9 @@
   height: 100%;
   clear: both;
   overflow: scroll;
+}
 
+.card-deco {
+  border-top: 20px solid var(--accent);
+  border-radius: 10px;
 }

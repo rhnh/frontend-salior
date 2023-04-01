@@ -241,13 +241,10 @@ export const getByUserPipeLine = ({
 export const randomBirdPipe = [
   {
     '$match': {
-      'isApproved': true,
-      'rank': 'species',
-      'info': {
-        '$exists': true,
-        '$ne': null,
-
-      }
+      isApproved: true,
+      rank: "species",
+      info: { $exists: true, $ne: null, },
+      imageUrl: { $exists: true, $ne: "imageUrl" }
     }
   }, {
     '$sample': {

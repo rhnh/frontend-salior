@@ -26,7 +26,6 @@ export const loader: LoaderFunction = async () => {
     ...data[0],
     ...fixTheId({ _id: data[0]._id }),
   } as unknown as Taxonomy
-  console.log(bird)
   return json<Loader>({ posts, bird })
 }
 
@@ -45,6 +44,20 @@ export default function HomeRouter() {
           <Posts posts={posts} />
         </section>
         <aside className="aside">
+          <section className="cards">
+            <section className="card card-deco">
+              <h3>{bird.englishName}</h3>
+              <hr />
+              <figure>
+                <Link to={`/taxonomy/${bird.id}`}>
+                  <img src={`${bird.imageUrl}`} alt="" />
+                </Link>
+              </figure>
+              <p>{bird.englishName}</p>
+              <p>{bird.taxonomy}</p>
+              <Link to={`/taxonomy/${bird.id}`}>Learn more</Link>
+            </section>
+          </section>
           <a
             className="button--success"
             target="_blank"
@@ -74,16 +87,6 @@ export default function HomeRouter() {
           <Link to="/users/register" className="button button--primary">
             Join Now!
           </Link>
-          <section className="cards">
-            <section className="card">
-              <h3>{bird.englishName}</h3>
-              <hr />
-
-              <p>{bird.englishName}</p>
-              <p>{bird.taxonomy}</p>
-              <Link to={`/taxonomy/${bird.id}`}>Learn more</Link>
-            </section>
-          </section>
         </aside>
       </article>
     </>
