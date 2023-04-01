@@ -20,7 +20,6 @@ export const loader: LoaderFunction = async () => {
   invariant(posts, "No post found")
   const data = (await getRandomTaxonomy()) as unknown as TaxonomyAndId[]
   invariant(data, "invalid data")
-  console.log(data[0])
   invariant(data, "No bird found")
   const bird = {
     ...data[0],
