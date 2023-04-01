@@ -46,7 +46,6 @@ export default function HomeRouter() {
           <section className="cards">
             <section className="card card-deco">
               <h3>{bird.englishName}</h3>
-              <hr />
               <figure>
                 <Link to={`/taxonomy/${bird.id}`}>
                   <img src={`${bird.imageUrl}`} alt="" />
