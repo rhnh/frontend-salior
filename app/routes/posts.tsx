@@ -16,6 +16,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const isAuthorized = isAuthorizedUser(authorizedUser?.role)
 
   if (isAuthorized) return json({ isAuthorized: true })
+  return json({ isAuthorized: false })
 }
 
 export default function Posts() {
