@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Profile() {
   const { isAuthorized, user } = useLoaderData()
   return (
-    <article className="cards centered">
+    <article className="cards single-card">
       <div className="card ">
         <section className="user-icon">
           <img src={`${userIcon}`} alt="" />

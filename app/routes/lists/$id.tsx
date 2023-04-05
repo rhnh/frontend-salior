@@ -77,6 +77,12 @@ export default function ShowList() {
           <i className="icon-alert-triangle"></i> {` `}
           Delete entire list
         </Link>
+        <Link
+          className="button button--secondary button--small"
+          to="/lists/new"
+        >
+          Create New List
+        </Link>
       </section>
       <Outlet />
     </article>
