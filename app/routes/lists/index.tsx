@@ -32,14 +32,24 @@ function ListsIndex() {
     return <p>No list found </p>
   }
   return (
-    <ol className="list">
-      {!lists ? <p>You don't have any list yet!</p> : null}
-      {lists?.map((list) => (
-        <li key={list.id}>
-          <Link to={list.id}>{list.listname}</Link>
-        </li>
-      ))}
-    </ol>
+    <article>
+      <ol className="list">
+        {!lists ? <p>You don't have any list yet!</p> : null}
+        {lists?.map((list) => (
+          <li key={list.id}>
+            <Link to={list.id}>{list.listname}</Link>
+          </li>
+        ))}
+      </ol>
+      <article>
+        <Link
+          to="/lists/new"
+          className="button button--secondary button--small"
+        >
+          Create new
+        </Link>
+      </article>
+    </article>
   )
 }
 
