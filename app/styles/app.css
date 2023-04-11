@@ -404,3 +404,7 @@
 .gap {
   padding: 2em;
 }
+
+.all-users a {
+  display: block;
+}
