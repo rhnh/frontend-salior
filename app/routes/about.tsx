@@ -96,11 +96,21 @@ const About = () => {
         <li>
           <a
             target="_blank"
-            href="https://www.youtube.com/@WickedWildlife/"
+            href="https://www.youtube.com/@animalwondersmontana"
             rel="noreferrer"
             aria-describedby="new-window-0"
           >
             Animal Wonders Montana
+          </a>
+        </li>
+        <li>
+          <a
+            target="_blank"
+            href="https://www.youtube.com/@NerdyAboutNature"
+            rel="noreferrer"
+            aria-describedby="new-window-0"
+          >
+            Nerdy About Nature
           </a>
         </li>
       </ul>
