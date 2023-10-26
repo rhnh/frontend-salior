@@ -1,5 +1,6 @@
 import type { Taxonomy } from "@prisma/client"
-import { Link } from "react-router-dom"
+import { Link } from "@remix-run/react"
+
 export const DisplayBird = ({
   taxonomy,
   englishName,

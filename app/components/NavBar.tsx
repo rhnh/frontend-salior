@@ -8,7 +8,7 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
   const pathname = useLocation().pathname
   const isActive = (pathname: string, origin: string) =>
     pathname === origin ? "active" : ""
-  // !don't replace a with NavLink, because in mobile the pages needs to be refreshed,
+  // !don't "<a>" replace a with <NavLink/>, because in mobile the pages needs to be refreshed,
   // !  so that menu closes
   return (
     <nav className="nav" role="navigation">
@@ -28,7 +28,7 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
 
       <ul className="nav-ul">
         <li>
-          <a className={`nav-link ${isActive(pathname, "/home")}`} href="/home">
+          <a className={`nav-link ${isActive(pathname, "/")}`} href="/">
             Home
           </a>
         </li>
@@ -48,14 +48,7 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
             Birds
           </a>
         </li>
-        <li>
-          <a
-            className={`nav-link ${isActive(pathname, "/lists")}`}
-            href="/lists"
-          >
-            Lists
-          </a>
-        </li>
+
         <li>
           <a
             className={`nav-link ${isActive(pathname, "/about")}`}
@@ -64,20 +57,22 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
             About
           </a>
         </li>
+
         {!isLogged ? (
           <>
+
             <li>
               <a
-                className={`nav-link ${isActive(pathname, "/users/login")}`}
-                href="/users/login"
+                className={`nav-link ${isActive(pathname, "/login")}`}
+                href="/login"
               >
                 Login
               </a>
             </li>
             <li>
               <a
-                className={`nav-link ${isActive(pathname, "/users/register")}`}
-                href="/users/register"
+                className={`nav-link ${isActive(pathname, "register")}`}
+                href="register"
               >
                 Register
               </a>
@@ -87,16 +82,24 @@ const NavBar: FC<{ isLogged: boolean; username?: string }> = ({
           <>
             <li>
               <a
-                className={`nav-link ${isActive(pathname, "/users/profile")}`}
-                href="/users/profile"
+                className={`nav-link ${isActive(pathname, "profile")}`}
+                href="profile"
               >
                 {username}
               </a>
             </li>
             <li>
               <a
-                className={`nav-link ${isActive(pathname, "/users/logout")}`}
-                href="/users/logout"
+                className={`nav-link ${isActive(pathname, "/lists")}`}
+                href="/lists"
+              >
+                MyBirdsLists
+              </a>
+            </li>
+            <li>
+              <a
+                className={`nav-link ${isActive(pathname, "logout")}`}
+                href="logout"
               >
                 Logout
               </a>

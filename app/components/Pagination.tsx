@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "@remix-run/react";
 import { getRowPageNumbers, next, previous } from "~/tools/pagination-tools";
 
 export const Pagination = ({
@@ -52,9 +52,8 @@ export const Pagination = ({
             key={p}
             aria-label={`page ${p + 1}`}
             to={`${rootPath}?page=${p + 1}`}
-            className={`pagination-links ${
-              current === p + 1 ? "pagination-links--active" : ""
-            }`}
+            className={`pagination-links ${current === p + 1 ? "pagination-links--active" : ""
+              }`}
           >
             {p + 1}
           </Link>
