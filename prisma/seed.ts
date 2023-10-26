@@ -1,77 +1,66 @@
 import { PrismaClient } from "@prisma/client";
-import type { Taxonomy } from "@prisma/client";
+import type { Taxonomy, User, Post } from "@prisma/client";
+const prisma = new PrismaClient();
 
-const db = new PrismaClient();
-
-async function seed() {
-  await Promise.resolve(
-    africanFishEagle().map(async (eagle) => {
-      return await db.taxonomy.create({
-        data: eagle as Taxonomy,
-      });
-    })
-  );
-  await db.list.create({
+async function addTaxonomy(): Promise<Taxonomy | undefined> {
+  const englishName = "bald eagle";
+  const taxonomy = await prisma.taxonomy.findFirst({ where: { englishName } });
+  if (taxonomy) {
+    return;
+  }
+  return await prisma.taxonomy.create({
     data: {
-      username: "john",
-      listname: "mara",
+      taxonomy: "bald-eagle",
+      englishName: "bald eagle",
+      isApproved: true,
+      ancestors: [],
+      rank: "species",
+      imageUrl: "/public/eagle.jpeg",
+      info: "some random info, just because",
+    },
+  });
+}
+async function addUser(): Promise<User | undefined> {
+  const username = "johndoe";
+  const user = await prisma.user.findUnique({ where: { username } });
+  if (user) {
+    return;
+  }
+  return await prisma.user.create({
+    data: {
+      username: "johndoe",
+      password: "abc123",
+      role: "user",
+    },
+  });
+}
+async function addPost(): Promise<Post | undefined> {
+  return await prisma.post.create({
+    data: {
+      username: "johndoe",
+      title: "Dummy Post",
+      body: "This is just the simple post",
     },
   });
 }
 
-const africanFishEagle = (): Partial<Taxonomy>[] => [
-  {
-    taxonomy: "Haliaeetus vocifer",
-    englishName: "African Fish eagle",
-    isApproved: true,
-    rank: "species",
-    info: `The African fish eagle (Haliaeetus vocifer) or the African sea eagle, is a large species of eagle found throughout sub-Saharan Africa wherever large bodies of open water with an abundant food supply occur. It is the national bird of Malawi, Namibia, Zambia, and Zimbabwe. As a result of its large range, it is known in many languages. Examples of names include:  `,
-    username: "john",
-    credit: "john",
-    parent: "Haliaeetus",
-    slug: "african-fish-eagle",
-    ancestors: [
-      "Haliaeetus",
-      "Haliaeetinae",
-      "Accipitridae",
-      "Accipitriformes",
-    ],
-  },
-  {
-    taxonomy: "Haliaeetus",
-    englishName: "See eagle",
-    isApproved: true,
-    rank: "genus",
-    username: "john",
-    credit: "john",
-    parent: "Haliaeetinae",
-    ancestors: ["Haliaeetinae", "Accipitridae", "Accipitriformes"],
-  },
-  {
-    taxonomy: "Haliaeetinae",
-    isApproved: true,
-    rank: "family",
-    username: "john",
-    parent: "Accipitridae",
-    ancestors: ["Accipitridae", "Accipitriformes"],
-  },
-  {
-    taxonomy: "Accipitridae",
-    isApproved: true,
-    rank: "family",
-    info: "The Accipitridae is one of the three families within the order Accipitriformes, and is a family of small to large birds with strongly hooked bills and variable morphology based on diet.",
-    username: "john",
-    parent: "Accipitriformes",
-    ancestors: ["Accipitriformes"],
-  },
-  {
-    taxonomy: "Accipitriformes",
-    isApproved: true,
-    rank: "order",
-    username: "john",
-    info: "",
-    ancestors: [],
-  },
-];
+async function main() {
+  const taxonomy = await addTaxonomy();
+  const user = await addUser();
+  const post = await addPost();
 
-seed().then(() => console.log("done"));
+  return { taxonomy, user, post };
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+
+  .catch(async (e) => {
+    console.error(e);
+
+    await prisma.$disconnect();
+
+    process.exit(1);
+  });

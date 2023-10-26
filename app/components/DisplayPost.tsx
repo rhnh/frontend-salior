@@ -1,6 +1,7 @@
 import type { Post } from "@prisma/client"
 import { Link } from "@remix-run/react"
-import { shorten } from "tests/utils"
+import { shorten } from "~/utils/base"
+
 
 /**
  *
@@ -29,12 +30,12 @@ export default function DisplayPost({
         </h3>
         <p>
           {isTrim ? shorten(post.body) : post.body}
-          <small>
-            <Link className="link-effect" to={`/posts/${post.id}`}>
-              read more
-            </Link>
-          </small>
         </p>
+        <p>       <small>
+          <Link className="link-effect" to={`/posts/${post.id}`}>
+            read more
+          </Link>
+        </small></p>
       </section>
     </article>
   )

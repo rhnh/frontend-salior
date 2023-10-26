@@ -1,29 +1,24 @@
-import { json } from "@remix-run/node"
-import type {
-  MetaFunction,
-  LinksFunction,
-  LoaderFunction,
-} from "@remix-run/node"
 
+import { json, type LinksFunction, type LoaderFunction } from "@remix-run/node";
+import { getLocalAuthenticatedUser } from "./utils/user.server";
+import type { LoggedUserLoader } from "./utils/session.server"
+import NavBar from "./components/NavBar";
+import Footer from "./components/footer";
+import globalStyle from "~/styles/global.css"
+import navStyle from "~/styles/nav.css"
+import icons from "~/styles/assets/icons/icons.css"
+import appStyle from "~/styles/app.css"
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  // Scripts,
   ScrollRestoration,
   useLoaderData,
-} from "@remix-run/react"
-import NavBar from "./components/NavBar"
-import globalStyle from "~/styles/global.css"
-import navStyle from "~/styles/nav.css"
-import icons from "~/styles/assets/icons/icons.css"
-import appStyle from "~/styles/app.css"
+  useRouteError,
+} from "@remix-run/react";
 
-import type { ReactNode } from "react"
-import { getLocalAuthenticatedUser } from "utils/user.server"
-import Footer from "./components/footer"
 
 export const links: LinksFunction = () => {
   return [
@@ -34,75 +29,62 @@ export const links: LinksFunction = () => {
   ]
 }
 
-export const meta: MetaFunction = () => {
-  const description = `Safarilive.org, At home in wildness`
-  return {
-    charset: "utf-8",
-    description,
-    title: "Safarilive",
-    viewport: "width=device-width, initial-scale=1.0",
-    keywords: "Safarilive,Safari, live",
-    "twitter:creator": "@safariliveorg",
-    "twitter:site": "@safariliveorg",
-    "twitter:title": "Safarilive",
-    "twitter:description": description,
-  }
-}
 
-type LoaderData = {
-  isAuthorized: boolean
-  username?: string | undefined
-}
 export const loader: LoaderFunction = async ({ request }) => {
   const authorizedUser = await getLocalAuthenticatedUser(request)
-  if (!authorizedUser) return json<LoaderData>({ isAuthorized: false })
-  else {
-    const username = authorizedUser.username
-    return json<LoaderData>({ isAuthorized: true, username })
-  }
-}
 
-function Document({ children, title }: { children: ReactNode; title: string }) {
+  if (!authorizedUser) return json<LoggedUserLoader>({ isAuthorized: false })
+  const username = authorizedUser.username
+  return json<LoggedUserLoader>({ isAuthorized: true, username })
+}
+export default function App() {
   const { isAuthorized: isLogged, username } =
-    useLoaderData<LoaderData>() || false
+    useLoaderData<LoggedUserLoader>()
   return (
     <html lang="en">
       <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <title>{title}</title>
       </head>
       <body>
         <header className="header">
           <NavBar isLogged={isLogged} username={username} />
         </header>
-        <main role="main">
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
+        <main>
+
+          <Outlet />
         </main>
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
         <Footer />
       </body>
     </html>
-  )
+  );
 }
 
-export default function App() {
-  return (
-    <Document title="Safarilive.org">
-      <Outlet />
-    </Document>
-  )
-}
 
-export function ErrorBoundary({ error }: { error: Error }) {
+type ErrorType = {
+  message: string,
+}
+export function ErrorBoundary() {
+  const error = useRouteError() as ErrorType
+  console.error(error);
   return (
-    <Document title="Error!">
-      <section>
-        <h1>App Error</h1>
-        <pre>{error.message}</pre>
-      </section>
-    </Document>
-  )
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <p className="content error">
+          Something went wrong, {error?.message ?? error?.message}
+        </p>
+        <Scripts />
+      </body>
+    </html>
+  );
 }

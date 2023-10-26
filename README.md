@@ -21,13 +21,34 @@ replicaSet initialization
 
 ```
 Create admin database
-### Step 4.1
+### Step 4.1 Create admin user for the admin database
 ```js
   use admin;
   //see the manual for more infos
   db.createUser({})
 ```
+
 [Mongodb Manual](https://www.mongodb.com/docs/manual/reference/method/db.createUser/)
+#### Step 4.1 Example
+```js 
+  db.createUser({
+    user:"admin",
+    pwd:passwordPhrase(),
+    roles:[{
+      role:"root",
+      db:"admin"
+    }]
+  })
+```
+### Step 4.2 
+```js 
+  db.auth("admin")
+  //enter the password
+```
+
+### Step 4.3 
+> Create new Users for the actual database.
+
 
 ### PS
 The default Mongodb port for this project is 27001, if you want change to port you need
